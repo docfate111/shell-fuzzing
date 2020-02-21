@@ -29,3 +29,4 @@
 - [POSIX spec](https://pubs.opengroup.org/onlinepubs/9699919799/)
 - [gramfuzz docs](https://d0c-s4vage.github.io/gramfuzz/)
 - [Fuzzing in bash](http://lcamtuf.blogspot.com/2014/10/bash-bug-how-we-finally-cracked.html)
+- [C-reduce on languages other than C](https://linki.tools/2020/02/creduce-it-s-a-kind-of-magic.html)
