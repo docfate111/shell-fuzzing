@@ -1,8 +1,19 @@
 from gramfuzz.fields import *
+
 class NRef(Ref):
     cat = "word"
 class NDef(Def):
     cat = "word"
+
+# TODO
+#
+# whitespace around keywords
+# generalize whitespace to zero-or-more space or tabs
+# clean up formatting
+# different categories for words and program statements? (not super important)
+#
+# figure out how to generate more strings and fewer special characters
+
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+.,/!^"
 #Def("charset_special_conditions_for_quoting", 
 # Or("*", "?", "[", "#", "˜", "=", "%"), cat="word")
@@ -20,25 +31,20 @@ Or("~",
 And("~", String(charset=String.charset_alpha, min=1, max=1), String(charset=String.charset_alphanum, min=0, max=10)),
 And("~", NRef("s"))))
 #braces needed?
-NDef("ifstatement", 
-Or(And("if ", NRef("s"), "\nthen ", Opt(NRef("s")), Opt("else"), NRef("s"), "fi"),
-                And("if ", "condition", "\nthen ", NRef("s"), Or("","else"), NRef("s"), "fi"),
-                And("if [ condition ] ", "\nthen ", NRef("s"),  Or("", "else"), NRef("s"), "fi")
-))
 NDef("FMTw", 
 Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
-NDef("name",
+NDef("NAME",
 Or(String(charset=String.charset_alphanum+b"_", min=1, max=15),
 "@", "*", "#", "?", "-", "$", "!"))
 NDef("recursableparens",
-Or(And("${", NRef("name"), "}"), 
-  And("${#", NRef("name"), "}"),
-  And("${", And(NRef("name"), NRef("FMTw"), "}"))),)
+Or(And("${", NRef("NAME"), "}"), 
+  And("${#", NRef("NAME"), "}"),
+  And("${", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), "}"))),)
 NDef("parens",
-Or(And("$", NRef("name"),
+Or(And("$", NRef("NAME"),
   NRef("recursableparens"))),
-  And("$(", NRef("name") , ")"),
-  And("$((", NRef("name"), "))"))
+  And("$(", NRef("NAME") , ")"),
+  And("$((", NRef("NAME"), "))"))
 NDef("~orVariable",
  Or(NRef("tilde"), NRef("parens")))
 #NDef("fields",
@@ -52,11 +58,12 @@ NDef("~orVariable",
 %token  NAME
 %token  NEWLINE //what are these?
 %token  IO_NUMBER'''
-NDef("WORD", NRef("s"))
-NDef("ASSIGNMENT_WORD", "assignmenthere")
-NDef("NAME", NRef("name"))
+word = NDef("WORD", Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6))
+NDef("ASSIGNMENT_WORD", And(NRef("NAME"), "=", NRef("WORD")))
 NDef("NEWLINE", "\n")
-NDef("IO_NUMBER", "number here")
+NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
+                               (0.45, [3, 9]),
+                               (0.1,  [10, 65535])])) 
 '''
 The following are the operators (see XBD Operator)
    containing more than one character. 
@@ -120,7 +127,7 @@ complete_command : list separator_op
                  | list
                  ;
 '''
-NDef("program", Or(And(NRef("linebreak"), NRef("complete_commands"), NRef("linebreak"), NRef("linebreak"))))
+Def("program", Or(And(NRef("linebreak"), NRef("complete_commands"), NRef("linebreak"), NRef("linebreak"))), cat="program")
 # avoid left recursion
 #NDef("complete_commands", 
 #     Or(And(NRef("complete_commands"), NRef("newline_list"), NRef("complete_command")),  
@@ -221,12 +228,10 @@ wordlist         : wordlist WORD
                  ;
 '''
 NDef("for_clause", Or(
-    And(NRef("For"),NRef("name"),NRef("do_group")),
-    And(NRef("For"),NRef("name"),NRef("sequential_sep"),NRef("do_group")),
-    And(NRef("For"),NRef("name"),NRef("linebreak"),NRef("in"),NRef("sequential_sep"),NRef("do_group")),
-    And(NRef("For"),NRef("name"),NRef("linebreak"),NRef("in"),NRef("wordlist"),NRef("sequential_sep"),NRef("do_group"))))
-NDef("name", NRef("NAME"))
-NDef("in", "in")
+    And(NRef("For")," ", NRef("NAME")," ", NRef("do_group")),
+    And(NRef("For")," ", NRef("NAME"),NRef("sequential_sep")," ", NRef("do_group")),
+    And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("sequential_sep")," ", NRef("do_group")),
+    And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("wordlist"),NRef("sequential_sep")," ", NRef("do_group"))))
 NDef("wordlist", Or(
     And(NRef("wordlist"), NRef("WORD")),
     NRef("WORD")))
@@ -242,9 +247,9 @@ case_list        : case_list case_item
                  |           case_item
 '''
 
-NDef("case_clause", Or(And(NRef("Case"),NRef("WORD"),NRef("linebreak"),NRef("in"),NRef("linebreak"),NRef("case_list"), NRef("Esac")),
-    And(NRef("Case"), NRef("WORD"), NRef("linebreak"), NRef("in"), NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
-    And(NRef("Case"),NRef("WORD"),NRef("linebreak"),NRef("in"),NRef("linebreak"), NRef("Esac"))))
+NDef("case_clause", Or(And(NRef("Case"),NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
+    And(NRef("Case"), NRef("WORD"), NRef("linebreak"), "in", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
+    And(NRef("Case"),NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"), NRef("Esac"))))
 
 NDef("case_list_ns", Or(
     And(NRef("case_list"), NRef("case_item_ns")),
@@ -328,12 +333,13 @@ NDef("function_body", Or(
 NDef("fname",NRef("NAME"))
 NDef("brace_group", Or(And(NRef("Lbrace"),NRef("compound_list"),NRef("Rbrace"))))
 NDef("do_group",And(NRef("Do"),NRef("compound_list"),NRef("Done")))
-NDef("simple_command", Or(
-    And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")),
-    And(NRef("cmd_prefix"), NRef("cmd_word")),
-    NRef("cmd_prefix"),
-    And(NRef("cmd_name"),NRef("cmd_suffix")),
-    NRef("cmd_name")))
+NDef("simple_command", And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")))
+#     Or(And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")),
+#        And(NRef("cmd_prefix"), NRef("cmd_word")),
+#        NRef("cmd_prefix"),
+#        And(NRef("cmd_name"),NRef("cmd_suffix")),
+#        NRef("cmd_name"))
+#
 '''
 cmd_name         : WORD                   /* Apply rule 7a */
                  ;
@@ -396,10 +402,12 @@ NDef("cmd_word", NRef("WORD"))
 #            NRef("ASSIGNMENT_WORD")),
 #            And(NRef("cmd_prefix"), NRef("ASSIGNMENT_WORD")))
 NDef("cmd_prefix", Join(Or(NRef("io_redirect"), NRef("ASSIGNMENT_WORD")), sep=" "))
-NDef("cmd_suffix", Or(NRef("io_redirect"),
-                    And(NRef("cmd_suffix"), NRef("io_redirect")),
-                 NRef("WORD"),
-                 And(NRef("cmd_suffix"),NRef("WORD"))))
+#NDef("cmd_suffix", Or(NRef("io_redirect"), 
+#                      And(NRef("cmd_suffix"), NRef("io_redirect")),
+#                      NRef("WORD"),
+#                      And(NRef("cmd_suffix"), NRef("WORD"))))
+NDef("cmd_suffix", Join(Or(NRef("io_redirect"), NRef("WORD")), sep=" "))
+
 NDef("redirect_list", Or(NRef("io_redirect"), And(NRef("redirect_list"),NRef("io_redirect"))))
 NDef("io_redirect", Or(NRef("io_file"),
                  And(NRef("IO_NUMBER"), NRef("io_file")),
@@ -407,7 +415,7 @@ NDef("io_redirect", Or(NRef("io_file"),
                  And(NRef("IO_NUMBER"), NRef("io_here"))))
 NDef("io_file", Or(
     And("<", NRef("filename")),
-    And("LESSAND", NRef("filename")),
+    And(NRef("LESSAND"), NRef("filename")),
     And('>', NRef("filename")),
     And(NRef("GREATAND"), NRef("filename")),
     And(NRef("DGREAT"), NRef("filename")),
@@ -423,8 +431,5 @@ NDef("newline_list", Or(NRef("NEWLINE"),
 NDef("linebreak",  Or(NRef("newline_list"), ""))
 #is this what empty means?
 NDef("separator_op", Or('&',';'))
-NDef("separator", Or(And("separator_op", "linebreak"), NRef("newline_list")))
+NDef("separator", Or(And(NRef("separator_op"), NRef("linebreak")), NRef("newline_list")))
 NDef("sequential_sep", Or(';',NRef("linebreak"),NRef("newline_list")))
-#This line breaks program :(
-NDef("w", 
-Or(Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6), NRef("program")))
