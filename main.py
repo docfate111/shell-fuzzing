@@ -1,5 +1,6 @@
 import gramfuzz
 fuzzer = gramfuzz.GramFuzzer()
+#fuzzer.debug = True
 fuzzer.load_grammar("words.py")
 code = list(fuzzer.gen(cat="word", num=50))
 # or like this if GRAMFUZZ_TOP_LEVEL_CAT="name" was defined in the
