@@ -44,12 +44,9 @@ Or(And("$", NRef("name"),
   And("$((", NRef("name"), "))"), cat="word")
 Def("~orVariable",
  Or(NRef("tilde"), NRef("parens")), cat="word")
-Def("w", 
-Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6),
-cat="word")
-Def("fields",
-Join(NRef("w"), sep=" ", max=10),
-cat="word")
+#Def("fields",
+#Join(NRef("w"), sep=" ", max=10),
+#cat="word")
 '''
 /* -------------------------------------------------------
    The grammar symbols
@@ -57,11 +54,13 @@ cat="word")
 %token  WORD
 %token  ASSIGNMENT_WORD
 %token  NAME
-%token  NEWLINE
+%token  NEWLINE //what are these?
 %token  IO_NUMBER'''
 Def("WORD", NRef("s"))
+Def("ASSIGNMENT_WORD", "assignmenthere")
 Def("NAME", NRef("name"))
 Def("NEWLINE", "\n")
+Def("IO_NUMBER", "number here")
 '''
 The following are the operators (see XBD Operator)
    containing more than one character. 
@@ -286,9 +285,20 @@ until_clause     : Until compound_list do_group
                  ;
 function_definition : fname '(' ')' linebreak function_body
                  ;
+                 '''
+Def("if_clause", Or(
+    And(NRef("If"), NRef("compound_list"), NRef("Then"), NRef("compound_list"),NRef("else_part"),NRef("Fi")),
+    And(NRef("If"),NRef("compound_list"),NRef("Then"),NRef("compound_list"),NRef("Fi"))))
+Def("else_part", Or(
+    And(NRef("Elif"),NRef("compound_list"),NRef("Then"),NRef("compound_list")),
+    And(NRef("Elif"),NRef("compound_list"),NRef("Then"),NRef("compound_list"),NRef("else_part")),
+    And(NRef("Else"),NRef("compound_list"))))
+Def("while_clause",And(NRef("While"),NRef("compound_list"),NRef("do_group")))
+Def("until_clause",And(NRef("Until"),NRef("compound_list"),NRef("do_group")))
+Def("function_definition", And(NRef("fname"), "(", ")",NRef("linebreak"),NRef("function_body")))
+'''
 function_body    : compound_command                /* Apply rule 9 */
-                 | compound_command redirect_list  /* Apply rule 9 */
-                 ;
+                 | compound_command redirect_list"
 fname            : NAME                            /* Apply rule 8 */
                  ;
 brace_group      : Lbrace compound_list Rbrace
@@ -300,7 +310,20 @@ simple_command   : cmd_prefix cmd_word cmd_suffix
                  | cmd_prefix
                  | cmd_name cmd_suffix
                  | cmd_name
-                 ;
+'''
+Def("function_body", Or(
+    NRef("compound_command"),
+    And(NRef("compound_command"), NRef("redirect_list"))))
+Def("fname",NRef("NAME"))
+Def("brace_group", Or(And(NRef("Lbrace"),NRef("compound_list"),NRef("Rbrace"))))
+Def("do_group",And(NRef("Do"),NRef("compound_list"),NRef("Done")))
+Def("simple_command", Or(
+    And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")),
+    And(NRef("cmd_prefix"), NRef("cmd_word")),
+    NRef("cmd_prefix"),
+    And(NRef("cmd_name"),NRef("cmd_suffix")),
+    NRef("cmd_name")))
+'''
 cmd_name         : WORD                   /* Apply rule 7a */
                  ;
 cmd_word         : WORD                   /* Apply rule 7b */
@@ -353,6 +376,44 @@ separator        : separator_op linebreak
 sequential_sep   : ';' linebreak
                  | newline_list
                  ;
-
-
 '''
+Def("cmd_name", NRef("WORD"))
+Def("cmd_word", NRef("WORD"))
+Def("cmd_prefix", Or(
+            NRef("io_redirect"),
+            And(NRef("cmd_prefix"),NRef("io_redirect")),
+            NRef("ASSIGNMENT_WORD")),
+            And(NRef("cmd_prefix"), NRef("ASSIGNMENT_WORD")))
+Def("cmd_suffix", Or(NRef("io_redirect"),
+                    And(NRef("cmd_suffix"), NRef("io_redirect")),
+                 NRef("WORD"),
+                 And(NRef("cmd_suffix"),NRef("WORD"))))
+Def("redirect_list", Or(NRef("io_redirect"), And(NRef("redirect_list"),NRef("io_redirect"))))
+Def("io_redirect", Or(NRef("io_file"),
+                 And(NRef("IO_NUMBER"), NRef("io_file")),
+                 NRef("io_here"),
+                 And(NRef("IO_NUMBER"), NRef("io_here"))))
+Def("io_file", Or(
+    And("<", NRef("filename")),
+    And("LESSAND", NRef("filename")),
+    And('>', NRef("filename")),
+    And(NRef("GREATAND"), NRef("filename")),
+    And(NRef("DGREAT"), NRef("filename")),
+    And(NRef("LESSGREAT"), NRef("filename")),
+    And(NRef("CLOBBER"), NRef("filename"))))
+Def("filename",  NRef("WORD"))
+Def("io_here",  Or(
+            And(NRef("DLESS"), NRef("here_end")),
+            And(NRef("DLESSDASH"), NRef("here_end"))))
+Def("here_end", NRef("WORD"))
+Def("newline_list", Or(NRef("NEWLINE"),
+                    And(NRef("newline_list"), NRef("NEWLINE"))))
+Def("linebreak",  Or(NRef("newline_list"), ""))
+#is this what empty means?
+Def("separator_op", Or('&',';'))
+Def("separator", Or(And("separator_op", "linebreak"), NRef("newline_list")))
+Def("sequential_sep", Or(';',NRef("linebreak"),NRef("newline_list")))
+#This line breaks program :(
+#Def("w", 
+#Or(Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6), NRef("program")),
+#cat="word")
