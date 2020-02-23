@@ -1,10 +1,8 @@
 from gramfuzz.fields import *
-
 class NRef(Ref):
     cat = "word"
 class NDef(Def):
     cat = "word"
-
 # TODO
 #
 # whitespace around keywords
@@ -18,37 +16,37 @@ charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456
 #Def("charset_special_conditions_for_quoting", 
 # Or("*", "?", "[", "#", "˜", "=", "%"), cat="word")
 NDef("charsthatneedquotes",
-Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
-NDef("quotedcharswithsingleordoublequotes", 
-Or(And("'", NRef("charsthatneedquotes"), "'"),
-And("\"", NRef("charsthatneedquotes"), "\"")
-))
-NDef("s", 
-Or(String(charset = charset_nonspecial, min=1,max=10), NRef("s"), NRef("parens"),
-NRef("charsthatneedquotes"))),
-NDef("tilde", 
-Or("~", 
-And("~", String(charset=String.charset_alpha, min=1, max=1), String(charset=String.charset_alphanum, min=0, max=10)),
-And("~", NRef("s"))))
+     Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
+#characters that require single or double quotes
+NDef("quotedcharswithsingleordoublequotes", Or(
+    And("'", NRef("charsthatneedquotes"), "'"),
+    And("\"", NRef("charsthatneedquotes"), "\"")))
+NDef("s", Or(
+    String(charset = charset_nonspecial, min=1,max=10), NRef("s"),
+    NRef("parens"),
+    NRef("charsthatneedquotes"))),
+NDef("tilde", Or(
+    "~", 
+    And("~", String(charset=String.charset_alpha, min=1, max=1), String(charset=String.charset_alphanum, min=0, max=10)),
+    And("~", NRef("s"))))
 #braces needed?
-NDef("FMTw", 
-Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
-NDef("NAME",
-Or(String(charset=String.charset_alphanum+b"_", min=1, max=15),
-"@", "*", "#", "?", "-", "$", "!"))
-NDef("recursableparens",
-Or(And("${", NRef("NAME"), "}"), 
-  And("${#", NRef("NAME"), "}"),
-  And("${", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), "}"))),)
-NDef("parens",
-Or(And("$", NRef("NAME"),
-  NRef("recursableparens"))),
-  And("$(", NRef("NAME") , ")"),
-  And("$((", NRef("NAME"), "))"))
-NDef("~orVariable",
- Or(NRef("tilde"), NRef("parens")))
-#NDef("fields",
-#Join(NRef("w"), sep=" ", max=10))
+NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
+NDef("NAME",Or(
+    String(charset=String.charset_alphanum+b"_", min=1, max=15),
+    Or("@", "*", "#", "?", "-", "$", "!")))
+#these parens can have parens inside themselves:
+NDef("recursableparens",Or(
+    And("${", NRef("NAME"), "}"), 
+    And("${#", NRef("NAME"), "}"),
+    And("${", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), "}"))),)
+NDef("parens",Or(
+    And("$", NRef("NAME"), NRef("recursableparens"))),
+    And("$(", NRef("NAME") , ")"),
+    And("$((", NRef("NAME"), "))"))
+#Rules for tilde:
+NDef("~orVariable",Or(
+    NRef("tilde"),
+    NRef("parens")))
 '''
 /* -------------------------------------------------------
    The grammar symbols
@@ -61,6 +59,7 @@ NDef("~orVariable",
 word = NDef("WORD", Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6))
 NDef("ASSIGNMENT_WORD", And(NRef("NAME"), "=", NRef("WORD")))
 NDef("NEWLINE", "\n")
+NDef("TAB", "\t")
 NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
                                (0.45, [3, 9]),
                                (0.1,  [10, 65535])])) 
@@ -84,6 +83,15 @@ NDef("GREATAND", ">&")
 NDef("LESSGREAT", "<>")
 NDef("DLESSDASH", "<<-")
 NDef("CLOBBER", ">|")
+NDef("WHITESPACE", Or(
+    NRef("WHITESPACE"),
+    NRef("NEWLINE"),
+    NRef("TAB"),
+    And(NRef("NEWLINE"), NRef("WHITESPACE")),
+    And(NRef("TAB"), NRef("WHITESPACE")),
+    " ",
+    And(" ", NRef("WHITESPACE"))
+    ))
 '''
 /* The following are the reserved words. */
 %token  If    Then    Else    Elif    Fi    Do    Done
@@ -96,21 +104,21 @@ These are reserved words, not operator tokens, and are
        '{'       '}'       '!'   
 %token  In
 /*      'in'   */'''
-NDef("If", "if")
-NDef("Then", "then")
-NDef("Else", "else")
-NDef("Elif", "elif")
-NDef("Fi", "fi")
-NDef("Do", "do")
-NDef("Done", "done")
-NDef("Case", "case")
-NDef("Esac", "esac")
-NDef("While", "while")
-NDef("Until",  "until")
-NDef("For", "for")
-NDef("Lbrace", "{")
-NDef("Rbrace", "}")
-NDef("Bang", "!")
+NDef("If", Or(And("if", NRef("WHITESPACE")), " if "))
+NDef("Then", Or(And("then", NRef("WHITESPACE")), " then "))
+NDef("Else", Or(And("else", NRef("WHITESPACE")), " else "))
+NDef("Elif", Or(And("elif", NRef("WHITESPACE")), " elif "))
+NDef("Fi", Or(And("fi", NRef("WHITESPACE")), " fi "))
+NDef("Do", Or(And("do", NRef("WHITESPACE")), " do "))
+NDef("Done", Or(And("done", NRef("WHITESPACE")), " done "))
+NDef("Case", Or(And("case", NRef("WHITESPACE")), " case "))
+NDef("Esac", Or(And("esac", NRef("WHITESPACE")), " esac "))
+NDef("While", Or(And("while", NRef("WHITESPACE")), " while "))
+NDef("Until",  Or(And("until", NRef("WHITESPACE")), " until "))
+NDef("For", Or(And("for", NRef("WHITESPACE")), " for "))
+NDef("Lbrace", Or(And("{", NRef("WHITESPACE")), " { "))
+NDef("Rbrace", Or(And(NRef("WHITESPACE"), "}"), "}"))
+NDef("Bang", Or(And("!", NRef("WHITESPACE")), "!"))
 '''
 /* -------------------------------------------------------
    The Grammar
@@ -154,7 +162,7 @@ NDef("and_or", Or(NRef("pipeline"),
 ))
 '''
 pipeline         :      pipe_sequence
-                 | Bang pipe_sequence
+                 | Bang pipe
                  ;
 pipe_sequence    :                             command
                  | pipe_sequence '|' linebreak command
@@ -262,7 +270,7 @@ NDef("case_list_ns", Or(
 NDef("case_list", Join(NRef("case_item"), sep=""))
 
 '''
-case_item_ns     :     pattern ')' linebreak
+case_item_ns     :     pattern ')' linebreak    
                  |     pattern ')' compound_list
                  | '(' pattern ')' linebreak
                  | '(' pattern ')' compound_list
