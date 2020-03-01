@@ -3,9 +3,9 @@
 - [ ] Finish words
 - [ ] Statements
   + [ ] Simple commands (assignments, commands, redirects)
-  + [ ] Process control (`|`, `&`, `(...)`)
-  + [ ] Logic (`&&`, `||`, `!`, `;`)
-  + [ ] Control (`if`, `while`, `until`, `for`, `case`)
+  + [ X ] Process control (`|`, `&`, `(...)`)
+  + [ X ] Logic (`&&`, `||`, `!`, `;`)
+  + [ X ] Control (`if`, `while`, `until`, `for`, `case`)
   + [ ] Function definition
   
 - [ ] Bias towards well known variables (`ENV`, `PATH`, etc.)
