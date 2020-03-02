@@ -97,7 +97,7 @@ NDef("parens",Or(
     And("$(", NRef("NAME") , ")"),
     And("$((", NRef("NAME"), "))"))
 #Rules for tilde:
-Def("~orVariable",Or(
+NDef("~orVariable",Or(
     NRef("tilde"),
     NRef("parens")))
 '''
