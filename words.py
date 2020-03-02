@@ -15,8 +15,34 @@ charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456
 charset_nonspecial_rest="-_+.,/!"
 #Def("charset_special_conditions_for_quoting", 
 # Or("*", "?", "[", "#", "˜", "=", "%"), cat="word")
-NDef("header", "#!/bin/")
+#NDef("header", "#!/bin/")
 #for beginning of programs i.e. #!/bin/zsh
+'''Not posix but in shells:
+    [[ ]]	
+    function	
+    select
+  other bashisms(for me to implement later): https://mywiki.wooledge.org/Bashism 
+'''
+NDef("globalvar",
+     Or(
+         "ENV",
+         "HOME",
+         "IFS",
+         "LANG",
+         "LC_ALL",
+         "LC_COLLATE",
+         "LC_CTYPE",
+         "LC_MESSAGES",
+         "LINENO",
+         "NLSPATH",
+         "PATH",
+         "PPID",
+         "PS1",
+         "PS2",
+         "PS4",
+         "PWD"
+     )
+)
 NDef("charsthatneedquotes",
      Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
 #characters that require single or double quotes
@@ -28,7 +54,7 @@ NDef("quotedcharswithsingleordoublequotes", Or(
     ),
     And(
         "\"",
-        NRef("charsthatneedquotes"),
+       NRef("charsthatneedquotes"),
         "\""
     )
 ))
@@ -57,7 +83,8 @@ NDef("tilde", Or(
 NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
 NDef("NAME",Or(
     String(charset=String.charset_alphanum+b"_", min=1, max=15),
-    Or("@", "*", "#", "?", "-", "$", "!")))
+    #reweighting needs to be done
+    Or("@", "*", "#", "?", "-", "$", "!", NRef("globalvar")))
 #these parens can have parens inside themselves:
 NDef("recursableparens",Or(
     And("${", NRef("NAME"), "}"), 
@@ -68,7 +95,7 @@ NDef("parens",Or(
     And("$(", NRef("NAME") , ")"),
     And("$((", NRef("NAME"), "))"))
 #Rules for tilde:
-NDef("~orVariable",Or(
+Def("~orVariable",Or(
     NRef("tilde"),
     NRef("parens")))
 '''
@@ -80,8 +107,32 @@ NDef("~orVariable",Or(
 %token  NAME
 %token  NEWLINE //what are these?
 %token  IO_NUMBER'''
-word = NDef("WORD", Join(Or(NRef("s"), NRef("~orVariable")), sep="", max=6))
-NDef("ASSIGNMENT_WORD", And(NRef("NAME"), "=", NRef("WORD")))
+word = NDef("WORD",
+            Join(
+                Or(
+                    NRef("s"),
+                    NRef("~orVariable")
+                ),
+                sep="",
+                max=6
+            )
+)
+NDef("ASSIGNMENT_WORD",
+     weightedOr(
+         And(
+        #should there be whitespace in assignment?
+             NRef("NAME"),
+             "=",
+             NRef("WORD")
+         ),
+         And(
+             NRef("globalvar"),
+             "=",
+             NRef("WORD")
+         ),
+         0.2
+     )
+)
 NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
 NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
