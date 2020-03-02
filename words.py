@@ -81,10 +81,12 @@ NDef("tilde", Or(
     ))
 #braces needed?
 NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
+NDef("varname",
+     And(String(charset=String.charset_alpha+b"_", min=1, max=1),
+         String(charset=String.charset_alphanum+b"_", min=1, max=15)))
 NDef("NAME",Or(
-    String(charset=String.charset_alphanum+b"_", min=1, max=15),
-    #reweighting needs to be done
-    Or("@", "*", "#", "?", "-", "$", "!", NRef("globalvar")))
+    NRef("varname"),
+    Or("@", "*", "#", "?", "-", "$", "!")))
 #these parens can have parens inside themselves:
 NDef("recursableparens",Or(
     And("${", NRef("NAME"), "}"), 
@@ -369,7 +371,7 @@ compound_command : brace_group
                  | until_clause
                  ;
 '''
-NDef("command",   Or(
+command = NDef("command",   Or(
     NRef("simple_command"),
     NRef("compound_command"),
     And(NRef("compound_command"), NRef("redirect_list")),
@@ -519,7 +521,7 @@ NDef("function_body", Or(
 NDef("fname",NRef("NAME"))
 NDef("brace_group", Or(And(NRef("Lbrace"),NRef("compound_list"),NRef("Rbrace"))))
 NDef("do_group",And(NRef("Do"),NRef("compound_list"),NRef("Done")))
-NDef("simple_command", And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")))
+simple_command = NDef("simple_command", And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")))
 #     Or(And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")),
 #        And(NRef("cmd_prefix"), NRef("cmd_word")),
 #        NRef("cmd_prefix"),
