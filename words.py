@@ -1,34 +1,58 @@
 from gramfuzz.fields import *
+import gramfuzz.rand as gr
 class NRef(Ref):
     cat = "word"
 class NDef(Def):
     cat = "word"
 # TODO
-#
 # whitespace around keywords
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
 # different categories for words and program statements? (not super important)
-#
 # figure out how to generate more strings and fewer special characters
-
-charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+.,/!^"
+weightedOr=lambda y,z,x : y if gr.maybe(prob=x) else z
+charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+charset_nonspecial_rest="-_+.,/!"
 #Def("charset_special_conditions_for_quoting", 
 # Or("*", "?", "[", "#", "˜", "=", "%"), cat="word")
+NDef("header", "#!/bin/")
+#for beginning of programs i.e. #!/bin/zsh
 NDef("charsthatneedquotes",
      Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
 #characters that require single or double quotes
 NDef("quotedcharswithsingleordoublequotes", Or(
-    And("'", NRef("charsthatneedquotes"), "'"),
-    And("\"", NRef("charsthatneedquotes"), "\"")))
-NDef("s", Or(
-    String(charset = charset_nonspecial, min=1,max=10), NRef("s"),
-    NRef("parens"),
-    NRef("charsthatneedquotes"))),
+    And(
+        "'",
+        NRef("charsthatneedquotes"),
+        "'"
+    ),
+    And(
+        "\"",
+        NRef("charsthatneedquotes"),
+        "\""
+    )
+))
+NDef("s", weightedOr(
+        String(charset = charset_nonspecial, min=1, max=15),
+        Or(
+            String(charset=charset_nonspecial_rest, min=1, max=10),
+            NRef("s"),
+            NRef("parens"),
+            NRef("charsthatneedquotes")
+        ), 0.9
+    ))
 NDef("tilde", Or(
     "~", 
-    And("~", String(charset=String.charset_alpha, min=1, max=1), String(charset=String.charset_alphanum, min=0, max=10)),
-    And("~", NRef("s"))))
+    And(
+        "~",
+        String(charset=String.charset_alpha, min=1, max=1),
+        String(charset=String.charset_alphanum, min=0, max=10)
+    ),
+    And(
+        "~",
+        NRef("s")
+    ),
+    ))
 #braces needed?
 NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
 NDef("NAME",Or(
@@ -73,25 +97,111 @@ The following are the operators (see XBD Operator)
 %token  CLOBBER
           '>|'  
 '''
-NDef("AND_IF", "&&")
-NDef("OR_IF", '||')
-NDef("DSEMI", ";;")
-NDef("DLESS", "<<")
-NDef("DGREAT", ">>")
-NDef("LESSAND", "<&")
-NDef("GREATAND", ">&")
-NDef("LESSGREAT", "<>")
-NDef("DLESSDASH", "<<-")
-NDef("CLOBBER", ">|")
-NDef("WHITESPACE", Or(
-    NRef("WHITESPACE"),
-    NRef("NEWLINE"),
-    NRef("TAB"),
-    And(NRef("NEWLINE"), NRef("WHITESPACE")),
-    And(NRef("TAB"), NRef("WHITESPACE")),
-    " ",
-    And(" ", NRef("WHITESPACE"))
-    ))
+NDef("AND_IF",
+     And(
+         NRef("WHITESPACE"),
+         "&&",
+         NRef("WHITESPACE")
+    )
+)
+NDef("OR_IF",
+     And(
+         NRef("WHITESPACE"),
+         '||',
+         NRef("WHITESPACE")
+     )
+)
+NDef("DSEMI",
+     Or(
+         ";;",
+         And(
+             NRef("WHITESPACE"),
+             ';;',
+             NRef("WHITESPACE")
+         )
+    )
+)    
+NDef("DLESS",
+     Or(
+         "<<",
+         And(
+             NRef("WHITESPACE"),
+             '<<',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("DGREAT",
+     Or(
+         ">>",
+         And(
+             NRef("WHITESPACE"),
+             '>>',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("LESSAND",
+     Or(
+         "<&",
+         And(
+             NRef("WHITESPACE"),
+             '<&',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("GREATAND",
+     Or(
+         ">&",
+         And(
+             NRef("WHITESPACE"),
+             '>&',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("LESSGREAT",
+     Or(
+         "<>",
+         And(
+             NRef("WHITESPACE"),
+             '<>',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("DLESSDASH",
+     Or(
+         "<<-",
+          And(
+              NRef("WHITESPACE"),
+              '<<-',
+              NRef("WHITESPACE")
+          )
+     )
+)
+NDef("CLOBBER",
+     Or(
+         ">|",
+         And(
+             NRef("WHITESPACE"),
+             '||',
+             NRef("WHITESPACE")
+         )
+     )
+)
+NDef("WHITESPACE",
+    Or(
+        NRef("WHITESPACE"),
+        NRef("NEWLINE"),
+        NRef("TAB"),
+        And(NRef("NEWLINE"), NRef("WHITESPACE")),
+        And(NRef("TAB"), NRef("WHITESPACE")),
+        " ",
+        And(" ", NRef("WHITESPACE"))
+    )
+)
 '''
 /* The following are the reserved words. */
 %token  If    Then    Else    Elif    Fi    Do    Done
@@ -135,14 +245,31 @@ complete_command : list separator_op
                  | list
                  ;
 '''
-Def("program", Or(And(NRef("linebreak"), NRef("complete_commands"), NRef("linebreak"), NRef("linebreak"))), cat="program")
+Def("program",
+    Or(
+        And(
+            NRef("linebreak"),
+            NRef("complete_commands"),
+            NRef("linebreak"),
+            NRef("linebreak")
+        )
+    ),
+    cat="program")
 # avoid left recursion
 #NDef("complete_commands", 
 #     Or(And(NRef("complete_commands"), NRef("newline_list"), NRef("complete_command")),  
 #        NRef("complete_command")))
 NDef("complete_commands",
-     And(Join(And(NRef("complete_command"), NRef("newline_list")), sep=""),
-         NRef("complete_command")))
+     And(
+         Join(
+             And(
+                 NRef("complete_command"),
+                 NRef("newline_list")
+             ),
+             sep=""),
+         NRef("complete_command")
+         )
+    )
 NDef("complete_command",
      Or(And(NRef("list"), NRef("separator_op")),
         NRef("list")))
