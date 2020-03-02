@@ -1,5 +1,8 @@
 from gramfuzz.fields import *
 import gramfuzz.rand as gr
+
+import random
+
 class NRef(Ref):
     cat = "word"
 class NDef(Def):
@@ -10,7 +13,50 @@ class NDef(Def):
 # clean up formatting
 # different categories for words and program statements? (not super important)
 # figure out how to generate more strings and fewer special characters
-weightedOr=lambda y,z,x : y if gr.maybe(prob=x) else z
+
+class WeightedOr(Field):
+    """A ``Field`` subclass that chooses one of the provided values at
+    random as the result of a call to the ``build()`` method. Takes an
+    odds array rather than just direct values.
+
+    """
+    
+    def __init__(self, *odds, **kwargs):
+        """Create a new ``WeightedOr`` instance with the provide values
+
+        :param list values: The list of (odds, value) pairs to choose randomly from
+        """
+        # when building with shortest=True, one of these values will
+        # be chosen instead of self.values
+        self.shortest_vals = None
+
+        self.values = list([v for o,v in odds])
+        self.weights = list([o for o,v in odds])
+
+        if abs(1.0 - sum(self.weights)) > 0.0001:
+            raise("Weights in WeightedOr don't sum to 1.0: {}".format(self.weights))
+        
+        if "options" in kwargs and len(values) == 0:
+            self.values = kwargs["options"]
+        self.rolling = kwargs.setdefault("rolling", False)
+    
+    def build(self, pre=None, shortest=False):
+        """Build the ``Or`` instance
+
+        :param list pre: The prerequisites list
+        :param bool shortest: Whether or not the shortest reference-chain (most minimal) version of the field should be generated.
+        """
+        if pre is None:
+            pre = []
+
+        # self.shortest_vals will be set by the GramFuzzer and will
+        # contain a list of value options that have a minimal reference
+        # chain
+        if shortest and self.shortest_vals is not None:
+            return utils.val(random.choices(self.shortest_vals, self.weights), pre, shortest=shortest)
+        else:
+            return utils.val(random.choices(self.values, self.weights), pre, shortest=shortest)
+
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 charset_nonspecial_rest="-_+.,/!"
 #Def("charset_special_conditions_for_quoting", 
@@ -58,14 +104,11 @@ NDef("quotedcharswithsingleordoublequotes", Or(
         "\""
     )
 ))
-NDef("s", weightedOr(
-        String(charset = charset_nonspecial, min=1, max=15),
-        Or(
-            String(charset=charset_nonspecial_rest, min=1, max=10),
-            NRef("s"),
-            NRef("parens"),
-            NRef("charsthatneedquotes")
-        ), 0.9
+NDef("s", WeightedOr(
+    (0.9, String(charset = charset_nonspecial, min=1, max=15)),
+    (0.1, Or(String(charset=charset_nonspecial_rest, min=1, max=10),
+             NRef("parens"),
+             NRef("charsthatneedquotes")))
     ))
 NDef("tilde", Or(
     "~", 
@@ -120,21 +163,19 @@ word = NDef("WORD",
             )
 )
 NDef("ASSIGNMENT_WORD",
-     weightedOr(
-         And(
+     WeightedOr(
+        (0.6, And(
         #should there be whitespace in assignment?
              NRef("NAME"),
              "=",
              NRef("WORD")
-         ),
-         And(
+         )),
+         (0.4, And(
              NRef("globalvar"),
              "=",
              NRef("WORD")
-         ),
-         0.2
+         )))
      )
-)
 NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
 NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
@@ -611,7 +652,7 @@ NDef("io_file", Or(
     And(NRef("CLOBBER"), NRef("filename"))))
 NDef("filename",  NRef("WORD"))
 NDef("io_here",  Or(
-            And(NRef("DLESS"), NRef("here_end")),
+            And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
 NDef("here_end", NRef("WORD"))
 NDef("newline_list", Or(NRef("NEWLINE"),

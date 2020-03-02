@@ -1,12 +1,15 @@
 # Generating random programs
 
 - [ ] Finish words
+  + [ ] Fixup HEREDOCS
 - [ ] Statements
   + [ ] Simple commands (assignments, commands, redirects)
   + [X] Process control (`|`, `&`, `(...)`)
   + [X] Logic (`&&`, `||`, `!`, `;`)
   + [X] Control (`if`, `while`, `until`, `for`, `case`)
   + [ ] Function definition
+  
+- [ ] WeightedOr 
   
 - [ ] Bias towards well known variables (`ENV`, `PATH`, etc.)
 - [ ] Bias towards well known shell builtins
