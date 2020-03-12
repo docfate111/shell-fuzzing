@@ -1,5 +1,6 @@
 from gramfuzz.fields import *
 import random
+import gramfuzz
 class NRef(Ref):
     cat = "word"
 class NDef(Def):

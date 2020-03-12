@@ -1,4 +1,4 @@
-import weightedOr
+from weightedOr import *
 # TODO
 # whitespace around keywords
 # generalize whitespace to zero-or-more space or tabs
@@ -52,12 +52,16 @@ NDef("quotedcharswithsingleordoublequotes", Or(
         "\""
     )
 ))
+#the problem with this method is I can't use String()
+#and an NRef object is printed
 NDef("s", WeightedOr(
-    (0.9, String(charset = charset_nonspecial, min=1, max=15)),
-    (0.1, Or(String(charset=charset_nonspecial_rest, min=1, max=10),
-             NRef("parens"),
-             NRef("charsthatneedquotes")))
-    ))
+    #(String(charset = charset_nonspecial, min=1, max=15), 0.8),
+    #(String(charset=charset_nonspecial_rest, min=1, max=10), 0.1),
+    (NRef("parens"), 0.9),
+    (NRef("tilde"), 0.1) 
+    )
+    )
+#print(NRef("s"))
 NDef("tilde", Or(
     "~", 
     And(
@@ -112,17 +116,17 @@ word = NDef("WORD",
 )
 NDef("ASSIGNMENT_WORD",
      WeightedOr(
-        (0.6, And(
+        (And(
         #should there be whitespace in assignment?
              NRef("NAME"),
              "=",
              NRef("WORD")
-         )),
-         (0.4, And(
+         ), 0.6),
+         (And(
              NRef("globalvar"),
              "=",
              NRef("WORD")
-         )))
+         ), 0.4))
      )
 NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
