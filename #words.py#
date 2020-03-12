@@ -122,11 +122,11 @@ NDef("ASSIGNMENT_WORD",
              "=",
              NRef("WORD")
          ), 0.6),
-         (And(
+         And(
              NRef("globalvar"),
              "=",
              NRef("WORD")
-         ), 0.4))
+         ), 0.4)
      )
 NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
