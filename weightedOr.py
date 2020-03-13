@@ -32,7 +32,7 @@ class WeightedOr(Field):
         if "options" in kwargs and len(values) == 0:
             self.values = list(map(maybe_binstr, kwargs["options"]))
         self.rolling = kwargs.setdefault("rolling", False)
-    def build(self, pre=None, shortest=False):
+    def helperbuild(self, pre=None, shortest=False):
         """
         :param list pre: The prerequisites list
         :param bool shortest: Whether or not the shortest reference-chain (most minimal) 
@@ -48,13 +48,20 @@ class WeightedOr(Field):
             return utils.val(random.choices(self.shortest_vals, self.weights), pre, shortest=shortest)
         else:
             return utils.val(random.choices(self.values, self.weights), pre, shortest=shortest)
-
+    def build(self, pre=None, shortest=False):
+        s=self.helperbuild(pre=None, shortest=False).decode('utf-8')
+        start=s.find('[')+3
+        end=s.find(']')-1
+        return bytes(s[start:end], 'utf-8')
 NDef("a", "a string")
 NDef("B", NRef("a"))
 NDef("c", "c string")
+NDef("d", "d string")
 y=Or(NRef("a"), NRef("B"), NRef("c"))
-x=WeightedOr((NRef("c"), 0.4), (NRef("a"),0.2), (NRef("B"), 0.4))
-#print(x)
-#print(x.build())
-#print(y)
-#print(y.build())
+x=WeightedOr((NRef("c"), 0.25), (NRef("a"),0.25), (NRef("B"), 0.25), (NRef("d"), 0.25))
+print(x)
+print(x.build())
+print(type(x.build()))
+print(y)
+print(y.build())
+print(type(y.build()))
