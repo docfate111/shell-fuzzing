@@ -53,7 +53,7 @@ class WeightedOr(Field):
         start=s.find('[')+3
         end=s.find(']')-1
         return bytes(s[start:end], 'utf-8')
-NDef("a", "a string")
+'''NDef("a", "a string")
 NDef("B", NRef("a"))
 NDef("c", "c string")
 NDef("d", "d string")
@@ -65,3 +65,4 @@ print(type(x.build()))
 print(y)
 print(y.build())
 print(type(y.build()))
+'''

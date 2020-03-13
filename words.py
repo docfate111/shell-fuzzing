@@ -1,6 +1,5 @@
 from weightedOr import *
 # TODO
-# whitespace around keywords
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
 # different categories for words and program statements? (not super important)
@@ -238,14 +237,14 @@ NDef("CLOBBER",
      )
 )
 NDef("WHITESPACE",
-    Or(
-        NRef("WHITESPACE"),
-        NRef("NEWLINE"),
-        NRef("TAB"),
-        And(NRef("NEWLINE"), NRef("WHITESPACE")),
-        And(NRef("TAB"), NRef("WHITESPACE")),
-        " ",
-        And(" ", NRef("WHITESPACE"))
+    WeightedOr(
+        (NRef("NEWLINE"), 0.2),
+        (NRef("TAB"), 0.6),
+        #(And(NRef("NEWLINE"), NRef("WHITESPACE")), 0.02),
+        #(And(NRef("TAB"), NRef("WHITESPACE")), 0.01),
+        (" ", 0.2),
+        #(And(" ", NRef("WHITESPACE")), 0.1),
+        #(NRef("WHITESPACE"), 0.05)
     )
 )
 '''
