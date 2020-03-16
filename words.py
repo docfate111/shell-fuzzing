@@ -2,8 +2,10 @@ from weightedOr import *
 # TODO
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
+#of code?
 # different categories for words and program statements? (not super important)
 # figure out how to generate more strings and fewer special characters
+# do you mean more valid strings?
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 charset_nonspecial_rest="-_+.,/!"
 #Def("charset_special_conditions_for_quoting", 
@@ -61,18 +63,19 @@ NDef("s", Or(
     )
     )
 #print(NRef("s"))
-NDef("tilde", Or(
-    "~", 
-    And(
-        "~",
-        String(charset=String.charset_alpha, min=1, max=1),
-        String(charset=String.charset_alphanum, min=0, max=10)
-    ),
-    And(
-        "~",
-        NRef("s")
-    ),
-    ))
+
+NDef("tilde", WeightedOr((NRef("s"), 0.9), (NRef("parens"), 0.1)))
+    #("~", 0.5), 
+    #(And(
+        #"~",
+     #   String(charset=String.charset_alpha, min=1, max=1),
+      #  String(charset=String.charset_alphanum, min=0, max=10)
+    #), 0.6),
+    #(And(
+        #"~",
+      #  NRef("s"), 0.4)
+     #)
+    #)
 #braces needed?
 NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
 NDef("varname",
@@ -242,7 +245,7 @@ NDef("WHITESPACE",
         (NRef("TAB"), 0.6),
         #(And(NRef("NEWLINE"), NRef("WHITESPACE")), 0.02),
         #(And(NRef("TAB"), NRef("WHITESPACE")), 0.01),
-        (" ", 0.2),
+        (" ", 0.2)
         #(And(" ", NRef("WHITESPACE")), 0.1),
         #(NRef("WHITESPACE"), 0.05)
     )
