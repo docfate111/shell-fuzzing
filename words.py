@@ -8,8 +8,31 @@ from weightedOr import *
 # do you mean more valid strings?
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 charset_nonspecial_rest="-_+.,/!"
-#Def("charset_special_conditions_for_quoting", 
-# Or("*", "?", "[", "#", "˜", "=", "%"), cat="word")
+'''
+The application shall quote the following characters if they are to represent themselves:
+
+|  &  ;  <  >  (  )  $  `  \  "  '  <space>  <tab>  <newline>
+
+Questions:
+is \" the same as "
+shouldn't there be cases with multiple characters (i.e "|&(" )
+do i need to close parens since it is only representing itself
+'''
+NDef("repr", Or("|", "&", ";","<",">","(",")","$","\`","\\","\"", "\'", " ","\t","\n"))
+NDef("single_quote", "\'")
+NDef("double_quote", "\"")
+NDef("representsitself", Or(
+                         And(NRef("single_quote"), NRef("repr"),NRef("single_quote")),
+                         And(NRef("double_quote"), NRef("repr"), NRef("double_quote"))
+                         )
+)
+'''
+Will implement this later:
+and the following may need to be quoted under certain circumstances. That is, these characters may be special depending on conditions described elsewhere in this volume of POSIX.1-2017:
+
+*   ?   [   #   ˜   =   %
+'''
+Def("charset_special_conditions_for_quoting", Or("*", "?", "[", "#", "˜", "=", "%"))
 #NDef("header", "#!/bin/")
 #for beginning of programs i.e. #!/bin/zsh
 '''Not posix but in shells:
@@ -38,6 +61,96 @@ NDef("globalvar",
          "PWD"
      )
 )
+#Regular Built-In Utilities
+#alias
+NDef("aliascmd", Or(
+    And(
+        "alias",
+        NRef("varname"),
+        "=",
+        NRef("s")
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        "=",
+        NRef("varname")
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        "=",
+        NRef("command")
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        "=",
+        And(
+            NRef("single_quote"),
+            NRef("command"),
+            NRef("single_quote")
+        )
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        "=",
+        And(
+            NRef("double_quote"),
+            NRef("command"),
+            NRef("double_quote")
+        )
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        And(
+            NRef("WHITESPACE"),
+            "=",
+            NRef("WHITESPACE")
+        ),
+        And(
+            NRef("double_quote"),
+            NRef("command"),
+            NRef("double_quote")
+        )
+    ),
+    And(
+        "alias",
+        NRef("varname"),
+        And(
+            NRef("WHITESPACE"),
+            "=",
+            NRef("WHITESPACE")
+        ),
+        And(
+            NRef("single_quote"),
+            NRef("command"),
+            NRef("single_quote")
+        )
+    )
+)
+)
+#bg
+#cd
+#command
+#false
+#fc
+#fg
+#getopts
+#hash
+#jobs
+#kill
+#newgrp
+#pwd
+#read
+#true
+#type
+#ulimit
+#umask
+#unalias
+#wait
 NDef("charsthatneedquotes",
      Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
 #characters that require single or double quotes
@@ -56,8 +169,10 @@ NDef("quotedcharswithsingleordoublequotes", Or(
 #the problem with this method is I can't use String()
 #and an NRef object is printed
 NDef("s", Or(
-    #(String(charset = charset_nonspecial, min=1, max=15), 0.8),
-    #(String(charset=charset_nonspecial_rest, min=1, max=10), 0.1),
+    String(charset = charset_nonspecial, min=1, max=15),
+    #, 0.8),
+    String(charset=charset_nonspecial_rest, min=1, max=10),
+     #0.1),
     NRef("parens"), #0.9),
     NRef("tilde") #, 0.1) 
     )
@@ -96,7 +211,9 @@ NDef("parens",Or(
 #Rules for tilde:
 NDef("~orVariable",Or(
     NRef("tilde"),
-    NRef("parens")))
+    NRef("parens")
+)
+)
 '''
 /* -------------------------------------------------------
    The grammar symbols

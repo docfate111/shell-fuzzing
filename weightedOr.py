@@ -60,17 +60,15 @@ NDef("r", WeightedOr(
     (NRef("r"), 0.25),
     (And(
         NRef("B"),
-        NRef("a")
+        NRef("r")
      ), 0.25),
     (NRef("B"), 0.25),
     (NRef("d"), 0.25)
 ))
-#print(r)
-#print(r.build())
-#print(type(r.build()))
-#print(x)
-#print(x.build())
-#print(type(x.build()))
+print(x)
+print(x.build())
+assert(type(x.build())==bytes)
 #print(y)
 #print(y.build())
-#print(type(y.build()))
+assert(type(y.build())==bytes)
+
