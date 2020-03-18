@@ -26,6 +26,7 @@ NDef("representsitself", Or(
                          And(NRef("double_quote"), NRef("repr"), NRef("double_quote"))
                          )
 )
+NDef("digit", Or("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"))
 '''
 Will implement this later:
 and the following may need to be quoted under certain circumstances. That is, these characters may be special depending on conditions described elsewhere in this volume of POSIX.1-2017:
@@ -62,8 +63,31 @@ NDef("globalvar",
      )
 )
 #Regular Built-In Utilities
+NDef("built-in", Or(
+    NRef("alias_command"),
+    NRef("bg_command"),
+    NRef("cd_command"),
+    NRef("command_command"),
+    NRef("false_command"),
+    NRef("fc_command"),
+    NRef("fg_command"),
+    NRef("getopts_command"),
+    NRef("hash_command"),
+    NRef("jobs_command"),
+    NRef("kill_command"),
+    NRef("newgrp_command"),
+    NRef("pwd_command"),
+    NRef("read_command"),
+    NRef("true_command"),
+    NRef("type_command"),
+    NRef("ulimit_command"),
+    NRef("umask_command"),
+    NRef("unalias_command"),
+    NRef("wait_command")
+)
+)
 #alias
-NDef("aliascmd", Or(
+NDef("alias_command", Or(
     And(
         "alias",
         NRef("varname"),
@@ -133,24 +157,329 @@ NDef("aliascmd", Or(
 )
 )
 #bg
+NDef("bg_command", Or(
+    "bg",
+    And(
+        "bg",
+        NRef("WHITESPACE"),
+        NRef("job_id")
+    )
+ )
+)
+NDef("job_id", Or(
+    "%%",
+    "%+",
+    "%-",
+    And("%", NRef("job_number")),
+    And("%", NRef("s")),
+    And("%?", NRef("s"))
+  )
+)
+NDef("job_number",  UInt(odds = [(0.45, [0, 2]),
+                               (0.45, [3, 9]),
+                               (0.1,  [10, 65535])]))
 #cd
+NDef("posix_directories", Or(
+    "/dev",
+    "/dev/null",
+    "/dev/tty",
+    "/tmp",
+    "/",
+    "/dev/console"
+    )
+)
+NDef("cd_command", Or(
+    And("cd",
+        NRef("WHITESPACE"),
+        Or(
+            "-L",
+            "-P",
+            ""
+        ),
+        NRef("WHITESPACE"),
+        Or(
+            NRef("s"),
+            NRef("posix_directories")
+        )
+    )
+    )
+     )
 #command
+NDef("command_command", And(
+        "command",
+        NRef("WHITESPACE"),
+        Or(
+            "-p",
+            Or(
+                "-v",
+                "-V"
+            ),
+            "",
+            And(
+                "-p",
+                 Or(
+                     "-v",
+                     "-V"
+                 )
+            ),
+        ),
+        NRef("WHITESPACE"),
+        Or(
+            NRef("s"),
+            NRef("built-in"),
+            NRef("command")
+        )
+    )
+)
 #false
+NDef("false_command", "false")
 #fc
+#seems wrong what goes on for first and last
+'''
+fc [-r] [-e editor] [first [last]]
+
+fc -l [-nr] [first [last]]
+
+fc -s [old=new] [first]
+'''
+NDef("editor", "ex")
+NDef("number",  UInt(odds = [(0.45, [0, 20]),
+                               (0.45, [20, 90]),
+                               (0.1,  [90, 65535])]
+    ))
+NDef("first", Or(
+                 NRef("s"),
+                 NRef("command"),
+                 NRef("number"),
+                 And("-", NRef("number"))
+              ))
+NDef("last", NRef("first"))
+NDef("old", NRef("command"))
+NDef("new", NRef("command"))
+NDef("fc_command", And(
+    "fc",
+     Or(
+         Or(
+             "-r",
+             And("-e", NRef("editor")),
+             Or(
+                 NRef("first"),
+                 And(
+                     NRef("first"),
+                     NRef("last")
+                )
+             ),
+             And(
+                 "-r",
+                 And("-e", NRef("editor"))
+             ),
+             And(
+                 Or(
+                     "-r",
+                     And("-e", NRef("editor"))
+                ),
+                 Or(
+                     NRef("first"),
+                     And(
+                         NRef("first"),
+                         NRef("last")
+                     )
+                 )
+             )   
+         ),
+         And(
+             "-l",
+             Or(
+                 "-nr",
+                 ""
+             ),
+             Or(
+                 NRef("first"),
+                 And(
+                     NRef("first"),
+                     NRef("last")
+                 ),
+                 ""
+             )
+         ),
+         And(
+             "-s",
+             Or(
+                 And(NRef("old"), "=", NRef("new")),
+                 ""
+             ),
+             Or(
+                 NRef("first"),
+                 ""
+            )
+         )
+     )
+)
+     )
 #fg
-#getopts
-#hash
+NDef("fg_command", Or(
+    "fg",
+    And(
+        "fg",
+        NRef("WHITESPACE"),
+        NRef("job_id")
+    )
+ )
+)
+#getopts: 
+'''
+how to implement? opstring as $options?    
+getopts optstring name [arg...]
+'''
+NDef("getopts_command", And("getopts", NRef("s"), NRef("varname")))
+#hash (not sure if this is right?)
+NDef("hash_command", Or("-r", NRef("command")))
 #jobs
+NDef("jobs_command", And(
+                     "jobs",
+                     NRef("WHITESPACE"),
+                     Or(
+                         "-l",
+                         "-p",
+                         ""
+                        ),
+                     NRef("WHITESPACE"),
+                     NRef("job_id")
+                     
+))
 #kill
+NDef("signal_name",
+     "SIGABRT",	
+     "SIGALRM",
+     "SIGBUS",
+     "SIGCHLD",	
+     "SIGCONT",
+     "SIGFPE",
+     "SIGHUP",
+     "SIGILL",	
+     "SIGINT",
+     "SIGKILL",
+     "SIGPIPE",
+     "SIGQUIT",
+     "SIGSEGV",
+     "SIGSTOP",
+     "SIGTERM",
+     "SIGTSTP",
+     "SIGTTIN"
+     "SIGTTOU",
+     "SIGUSR1",
+     "SIGUSR2",
+     "SIGPOLL"	
+     "SIGPROF",
+     "SIGSYS",
+     "SIGTRAP",
+     "SIGURG",
+     "SIGVTALRM",
+     "SIGXCPU",
+     "SIGXFSZ")
+'''
+kill -s signal_name pid...
+
+kill -l [exit_status]
+
+[XSI] [Option Start] kill [-signal_name] pid...
+
+kill [-signal_number] pid... 
+'''
+NDef("kill_command", And("kill", NRef("WHITESPACE"),
+                         Or(
+                             And(
+                                 "-l",
+                                 NRef("WHITESPACE"),
+                                 NRef("job_number")
+                             ),
+                             And(
+                                 "-s",
+                                 NRef("WHITESPACE"),
+                                 NRef("signal_name"),
+                                 NRef("WHITESPACE"),
+                                 NRef("job_number")
+                             ),
+                             And(
+                                 "-",
+                                 NRef("signal_name"),
+                                 NRef("WHITESPACE"),
+                                 NRef("job_number")
+                             ),
+                          )
+     )
+)
 #newgrp
+NDef("group", NRef("varname"))
+NDef("newgrp_command", And("newgrp",
+                           Or(
+                             "",
+                             And(NRef("WHITESPACE"), "-l"),
+                              And(NRef("WHITESPACE"), "-l", NRef("WHITESPACE"), NRef("group")),
+                               And(NRef("WHITESPACE"), NRef("group")),
+)
+))
 #pwd
+NDef("pwd_command", And("pwd", NRef("WHITESPACE"),
+                        Or(
+                            "-L",
+                            "-P",
+                            And("-L", NRef("WHITESPACE"), "-P"),
+                             And("-P", NRef("WHITESPACE"), "-L"),
+                            ""
+                            ))
+)
 #read
+NDef("read_command", And("read", NRef("WHITESPACE"),
+                         Or(
+                             And("-r", NRef("WHITESPACE"), NRef("varname")),
+                             NRef("varname")
+                        )
+                     )
+)
 #true
+NDef("true_command", "true")
 #type
-#ulimit
+NDef("type_command", And("type", NRef("WHITESPACE"), NRef("varname"))) 
+#ulimit ulimit [-f] [blocks][Option End]
+NDef("ulimit_command", And("ulimit", NRef("WHITESPACE"),
+                           Or(
+                               "-f",
+                               And("-f", NRef("WHITESPACE"), NRef("number")),
+                               NRef("number")
+                           )
+))
 #umask
+NDef("umask_command", And("umask", NRef("WHITESPACE"),
+                          And(
+                              Or(
+                                  "",
+                                  And("-S", NRef("WHITESPACE")),
+                              ),
+                              And(
+                                  NRef("digit"),
+                                  NRef("digit"),
+                                  NRef("digit")
+                              )
+                        )
+                          
+                       )
+     )
 #unalias
+NDef("unalias_command", And("unalias", NRef("WHITESPACE"),
+                            Or(
+                                NRef("varname"),
+                                "-a"
+                            )
+                            )
+)   
 #wait
+NDef("wait_command", And("wait", NRef("WHITESPACE"),
+                         Or(
+                             NRef("job_number"),
+                             NRef("job_id")
+                      ))
+)
 NDef("charsthatneedquotes",
      Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
 #characters that require single or double quotes
@@ -194,8 +523,9 @@ NDef("tilde", WeightedOr((NRef("s"), 0.9), (NRef("parens"), 0.1)))
 #braces needed?
 NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
 NDef("varname",
+     Or( NRef("globalvar"),
      And(String(charset=String.charset_alpha+b"_", min=1, max=1),
-         String(charset=String.charset_alphanum+b"_", min=1, max=15)))
+         String(charset=String.charset_alphanum+b"_", min=1, max=15))))
 NDef("NAME",Or(
     NRef("varname"),
     Or("@", "*", "#", "?", "-", "$", "!")))
@@ -484,6 +814,7 @@ compound_command : brace_group
                  ;
 '''
 command = NDef("command",   Or(
+    NRef("built-in"),
     NRef("simple_command"),
     NRef("compound_command"),
     And(NRef("compound_command"), NRef("redirect_list")),
@@ -510,7 +841,7 @@ NDef("subshell", And('(', NRef("compound_list"), ")"))
 NDef("compound_list", Or(
     And(NRef("linebreak"), NRef("term")),
     And(NRef("linebreak"), NRef("term"), NRef("separator"))))
-NDef("term", Or(
+NDef("term", Or(NRef("true_command"), NRef("false_command"), 
     And(NRef("term"), NRef("separator"), NRef("and_or")),
         NRef("and_or")))
 '''

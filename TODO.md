@@ -3,16 +3,16 @@
 - [ ] Finish words
   + [ ] Fixup HEREDOCS
 - [ ] Statements
-  + [ ] Simple commands (assignments, commands, redirects)
+  + [X] Simple commands (assignments, commands, redirects)
   + [X] Process control (`|`, `&`, `(...)`)
   + [X] Logic (`&&`, `||`, `!`, `;`)
   + [X] Control (`if`, `while`, `until`, `for`, `case`)
-  + [ ] Function definition
+  + [X] Function definition
   
 - [X] WeightedOr 
   
-- [ ] Bias towards well known variables (`ENV`, `PATH`, etc.)
-- [ ] Bias towards well known shell builtins
+- [X] Bias towards well known variables (`ENV`, `PATH`, etc.)
+- [X] Bias towards well known shell builtins
 - [ ] Option to not generate calls to real programs (need to watch out for `eval` and `source`/`.`!)
 - [ ] Options to avoid weird behaviors
   + [ ] Implementation defined (e.g., checking pipe termination)

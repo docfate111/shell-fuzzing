@@ -65,8 +65,8 @@ NDef("r", WeightedOr(
     (NRef("B"), 0.25),
     (NRef("d"), 0.25)
 ))
-print(x)
-print(x.build())
+#print(x)
+#print(x.build())
 assert(type(x.build())==bytes)
 #print(y)
 #print(y.build())
