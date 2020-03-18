@@ -8,6 +8,40 @@ from weightedOr import *
 # do you mean more valid strings?
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 charset_nonspecial_rest="-_+.,/!"
+#the problem with this method is I can't use String()
+#and an NRef object is printed
+NDef("random_string",  String(charset = charset_nonspecial, min=1, max=15))
+NDef("s", And(
+    NRef("WHITESPACE"),
+    NRef("random_string"),
+    NRef("WHITESPACE")
+)
+)
+    #, 0.8),
+    #String(charset=charset_nonspecial_rest, min=1, max=10),
+     #0.1),
+    #NRef("parens"), #0.9),
+    #NRef("tilde") #, 0.1) 
+#print(NRef("s"))
+NDef("~", "~")
+NDef("tilde", WeightedOr(
+    (NRef("s"), 0.8),
+    (NRef("parens"), 0.1),
+    (NRef("~"), 0.1)
+)
+) 
+    #(And(
+        #"~",
+     #   String(charset=String.charset_alpha, min=1, max=1),
+      #  String(charset=String.charset_alphanum, min=0, max=10)
+    #), 0.6),
+    #(And(
+        #"~",
+      #  NRef("s"), 0.4)
+     #)
+    #)
+#braces needed?
+NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
 '''
 The application shall quote the following characters if they are to represent themselves:
 
@@ -22,8 +56,8 @@ NDef("repr", Or("|", "&", ";","<",">","(",")","$","\`","\\","\"", "\'", " ","\t"
 NDef("single_quote", "\'")
 NDef("double_quote", "\"")
 NDef("representsitself", Or(
-                         And(NRef("single_quote"), NRef("repr"),NRef("single_quote")),
-                         And(NRef("double_quote"), NRef("repr"), NRef("double_quote"))
+                         And(NRef("single_quote"), NRef("repr"),NRef("single_quote"),  NRef("WHITESPACE"),),
+                         And(NRef("double_quote"), NRef("repr"), NRef("double_quote"),  NRef("WHITESPACE"),)
                          )
 )
 NDef("digit", Or("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"))
@@ -90,45 +124,67 @@ NDef("built-in", Or(
 NDef("alias_command", Or(
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         "=",
-        NRef("s")
+         NRef("WHITESPACE"),
+        NRef("s"),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         "=",
-        NRef("varname")
+         NRef("WHITESPACE"),
+        NRef("varname"),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         "=",
-        NRef("command")
+         NRef("WHITESPACE"),
+        NRef("command"),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         "=",
+         NRef("WHITESPACE"),
         And(
             NRef("single_quote"),
             NRef("command"),
             NRef("single_quote")
-        )
+        ),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         "=",
+         NRef("WHITESPACE"),
         And(
             NRef("double_quote"),
             NRef("command"),
             NRef("double_quote")
-        )
+        ),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         And(
             NRef("WHITESPACE"),
             "=",
@@ -136,13 +192,18 @@ NDef("alias_command", Or(
         ),
         And(
             NRef("double_quote"),
+             NRef("WHITESPACE"),
             NRef("command"),
+             NRef("WHITESPACE"),
             NRef("double_quote")
-        )
+        ),
+         NRef("WHITESPACE"),
     ),
     And(
         "alias",
+         NRef("WHITESPACE"),
         NRef("varname"),
+         NRef("WHITESPACE"),
         And(
             NRef("WHITESPACE"),
             "=",
@@ -150,9 +211,12 @@ NDef("alias_command", Or(
         ),
         And(
             NRef("single_quote"),
+             NRef("WHITESPACE"),
             NRef("command"),
+             NRef("WHITESPACE"),
             NRef("single_quote")
-        )
+        ),
+         NRef("WHITESPACE"),
     )
 )
 )
@@ -189,7 +253,7 @@ NDef("posix_directories", Or(
     )
 )
 NDef("cd_command", Or(
-    And("cd",
+    And(NRef("WHITESPACE"), "cd",
         NRef("WHITESPACE"),
         Or(
             "-L",
@@ -200,7 +264,8 @@ NDef("cd_command", Or(
         Or(
             NRef("s"),
             NRef("posix_directories")
-        )
+        ),
+         NRef("WHITESPACE"),
     )
     )
      )
@@ -228,7 +293,8 @@ NDef("command_command", And(
             NRef("s"),
             NRef("built-in"),
             NRef("command")
-        )
+        ),
+     NRef("WHITESPACE"),
     )
 )
 #false
@@ -258,37 +324,47 @@ NDef("old", NRef("command"))
 NDef("new", NRef("command"))
 NDef("fc_command", And(
     "fc",
+     NRef("WHITESPACE"),
      Or(
          Or(
              "-r",
-             And("-e", NRef("editor")),
+             And("-e",  NRef("WHITESPACE"), NRef("editor"),  NRef("WHITESPACE")),
              Or(
                  NRef("first"),
                  And(
                      NRef("first"),
-                     NRef("last")
+                      NRef("WHITESPACE"),
+                     NRef("last"),
+                      NRef("WHITESPACE"),
                 )
              ),
              And(
                  "-r",
-                 And("-e", NRef("editor"))
+                  NRef("WHITESPACE"),
+                 And("-e", NRef("editor")),
+                  NRef("WHITESPACE"),
              ),
              And(
                  Or(
                      "-r",
-                     And("-e", NRef("editor"))
+                      NRef("WHITESPACE"),
+                     And("-e", NRef("editor")),
+                      NRef("WHITESPACE")
                 ),
                  Or(
                      NRef("first"),
                      And(
                          NRef("first"),
-                         NRef("last")
+                          NRef("WHITESPACE"),
+                         NRef("last"),
+                          NRef("WHITESPACE"),
                      )
                  )
              )   
          ),
          And(
              "-l",
+              NRef("WHITESPACE"),
              Or(
                  "-nr",
                  ""
@@ -297,15 +373,18 @@ NDef("fc_command", And(
                  NRef("first"),
                  And(
                      NRef("first"),
-                     NRef("last")
+                      NRef("WHITESPACE"),
+                     NRef("last"),
+                      NRef("WHITESPACE"),
                  ),
                  ""
              )
          ),
          And(
              "-s",
+              NRef("WHITESPACE"),
              Or(
-                 And(NRef("old"), "=", NRef("new")),
+                 And(NRef("old"),  NRef("WHITESPACE"), "=",  NRef("WHITESPACE"), NRef("new")),
                  ""
              ),
              Or(
@@ -331,7 +410,7 @@ NDef("fg_command", Or(
 how to implement? opstring as $options?    
 getopts optstring name [arg...]
 '''
-NDef("getopts_command", And("getopts", NRef("s"), NRef("varname")))
+NDef("getopts_command", And("getopts",  NRef("WHITESPACE"), NRef("s"),  NRef("WHITESPACE"), NRef("varname")))
 #hash (not sure if this is right?)
 NDef("hash_command", Or("-r", NRef("command")))
 #jobs
@@ -344,11 +423,12 @@ NDef("jobs_command", And(
                          ""
                         ),
                      NRef("WHITESPACE"),
-                     NRef("job_id")
+                     NRef("job_id"),
+                      NRef("WHITESPACE")
                      
 ))
 #kill
-NDef("signal_name",
+NDef("signal_name", Or(
      "SIGABRT",	
      "SIGALRM",
      "SIGBUS",
@@ -376,7 +456,7 @@ NDef("signal_name",
      "SIGURG",
      "SIGVTALRM",
      "SIGXCPU",
-     "SIGXFSZ")
+     "SIGXFSZ"))
 '''
 kill -s signal_name pid...
 
@@ -391,20 +471,23 @@ NDef("kill_command", And("kill", NRef("WHITESPACE"),
                              And(
                                  "-l",
                                  NRef("WHITESPACE"),
-                                 NRef("job_number")
+                                 NRef("job_number"),
+                                  NRef("WHITESPACE")
                              ),
                              And(
                                  "-s",
                                  NRef("WHITESPACE"),
                                  NRef("signal_name"),
                                  NRef("WHITESPACE"),
-                                 NRef("job_number")
+                                 NRef("job_number"),
+                                  NRef("WHITESPACE")
                              ),
                              And(
                                  "-",
                                  NRef("signal_name"),
                                  NRef("WHITESPACE"),
-                                 NRef("job_number")
+                                 NRef("job_number"),
+                                  NRef("WHITESPACE")
                              ),
                           )
      )
@@ -414,9 +497,9 @@ NDef("group", NRef("varname"))
 NDef("newgrp_command", And("newgrp",
                            Or(
                              "",
-                             And(NRef("WHITESPACE"), "-l"),
+                             And(NRef("WHITESPACE"), "-l",  NRef("WHITESPACE")),
                               And(NRef("WHITESPACE"), "-l", NRef("WHITESPACE"), NRef("group")),
-                               And(NRef("WHITESPACE"), NRef("group")),
+                               And(NRef("WHITESPACE"), NRef("group"),  NRef("WHITESPACE")),
 )
 ))
 #pwd
@@ -424,15 +507,15 @@ NDef("pwd_command", And("pwd", NRef("WHITESPACE"),
                         Or(
                             "-L",
                             "-P",
-                            And("-L", NRef("WHITESPACE"), "-P"),
-                             And("-P", NRef("WHITESPACE"), "-L"),
+                            And("-L", NRef("WHITESPACE"), "-P",  NRef("WHITESPACE")),
+                             And("-P", NRef("WHITESPACE"), "-L",  NRef("WHITESPACE")),
                             ""
                             ))
 )
 #read
 NDef("read_command", And("read", NRef("WHITESPACE"),
                          Or(
-                             And("-r", NRef("WHITESPACE"), NRef("varname")),
+                             And("-r", NRef("WHITESPACE"), NRef("varname"),  NRef("WHITESPACE")),
                              NRef("varname")
                         )
                      )
@@ -440,12 +523,12 @@ NDef("read_command", And("read", NRef("WHITESPACE"),
 #true
 NDef("true_command", "true")
 #type
-NDef("type_command", And("type", NRef("WHITESPACE"), NRef("varname"))) 
+NDef("type_command", And("type", NRef("WHITESPACE"), NRef("varname"),  NRef("WHITESPACE"))) 
 #ulimit ulimit [-f] [blocks][Option End]
 NDef("ulimit_command", And("ulimit", NRef("WHITESPACE"),
                            Or(
                                "-f",
-                               And("-f", NRef("WHITESPACE"), NRef("number")),
+                               And("-f", NRef("WHITESPACE"), NRef("number"),  NRef("WHITESPACE")),
                                NRef("number")
                            )
 ))
@@ -459,7 +542,8 @@ NDef("umask_command", And("umask", NRef("WHITESPACE"),
                               And(
                                   NRef("digit"),
                                   NRef("digit"),
-                                  NRef("digit")
+                                  NRef("digit"),
+                                   NRef("WHITESPACE")
                               )
                         )
                           
@@ -470,7 +554,8 @@ NDef("unalias_command", And("unalias", NRef("WHITESPACE"),
                             Or(
                                 NRef("varname"),
                                 "-a"
-                            )
+                            ),
+                             NRef("WHITESPACE")
                             )
 )   
 #wait
@@ -478,11 +563,12 @@ NDef("wait_command", And("wait", NRef("WHITESPACE"),
                          Or(
                              NRef("job_number"),
                              NRef("job_id")
-                      ))
+                         ),  NRef("WHITESPACE"))
 )
 NDef("charsthatneedquotes",
      Or("|", "&",";", "<", ">", "(", ")", "$", "`", "\\", "\"", "\'" , " ", "\n"))
 #characters that require single or double quotes
+#never used?
 NDef("quotedcharswithsingleordoublequotes", Or(
     And(
         "'",
@@ -495,49 +581,23 @@ NDef("quotedcharswithsingleordoublequotes", Or(
         "\""
     )
 ))
-#the problem with this method is I can't use String()
-#and an NRef object is printed
-NDef("s", Or(
-    String(charset = charset_nonspecial, min=1, max=15),
-    #, 0.8),
-    String(charset=charset_nonspecial_rest, min=1, max=10),
-     #0.1),
-    NRef("parens"), #0.9),
-    NRef("tilde") #, 0.1) 
-    )
-    )
-#print(NRef("s"))
-
-NDef("tilde", WeightedOr((NRef("s"), 0.9), (NRef("parens"), 0.1)))
-    #("~", 0.5), 
-    #(And(
-        #"~",
-     #   String(charset=String.charset_alpha, min=1, max=1),
-      #  String(charset=String.charset_alphanum, min=0, max=10)
-    #), 0.6),
-    #(And(
-        #"~",
-      #  NRef("s"), 0.4)
-     #)
-    #)
-#braces needed?
-NDef("FMTw", Or("-", "-:", "=", "=:", "+", "+:", "?", "?:", "%", "%%",  "#", "##"))
-NDef("varname",
+NDef("varname", And(NRef("WHITESPACE"),
      Or( NRef("globalvar"),
      And(String(charset=String.charset_alpha+b"_", min=1, max=1),
-         String(charset=String.charset_alphanum+b"_", min=1, max=15))))
-NDef("NAME",Or(
-    NRef("varname"),
-    Or("@", "*", "#", "?", "-", "$", "!")))
+         String(charset=String.charset_alphanum+b"_", min=1, max=15)
+     )), NRef("WHITESPACE")))
+NDef("NAME", WeightedOr(
+    (NRef("varname"), 0.9),
+    (Or("@", "*", "#", "?", "-", "$", "!"), 0.1)))
 #these parens can have parens inside themselves:
 NDef("recursableparens",Or(
-    And("${", NRef("NAME"), "}"), 
-    And("${#", NRef("NAME"), "}"),
-    And("${", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), "}"))),)
+    And("${", NRef("WHITESPACE"), NRef("NAME"), NRef("WHITESPACE"), "}"), 
+    And("${#", NRef("WHITESPACE"), NRef("NAME"), NRef("WHITESPACE"), "}"),
+    And("${", NRef("WHITESPACE"), And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), NRef("WHITESPACE"), "}"))),)
 NDef("parens",Or(
-    And("$", NRef("NAME"), NRef("recursableparens"))),
-    And("$(", NRef("NAME") , ")"),
-    And("$((", NRef("NAME"), "))"))
+    And("$",NRef("WHITESPACE"), NRef("NAME"),NRef("WHITESPACE"), NRef("recursableparens"))),
+    And("$(",NRef("WHITESPACE"), NRef("NAME") , NRef("WHITESPACE"),")"),
+    And("$((",NRef("WHITESPACE"), NRef("NAME"),NRef("WHITESPACE"), "))"))
 #Rules for tilde:
 NDef("~orVariable",Or(
     NRef("tilde"),
@@ -568,12 +628,16 @@ NDef("ASSIGNMENT_WORD",
         (And(
         #should there be whitespace in assignment?
              NRef("NAME"),
+            NRef("WHITESPACE"),
              "=",
+             NRef("WHITESPACE"),
              NRef("WORD")
          ), 0.6),
          (And(
              NRef("globalvar"),
+              NRef("WHITESPACE"),
              "=",
+              NRef("WHITESPACE"),
              NRef("WORD")
          ), 0.4))
      )
@@ -607,43 +671,43 @@ NDef("OR_IF",
      )
 )
 NDef("DSEMI",
-     Or(
-         ";;",
-         And(
+     WeightedOr(
+         (";;", 0.1),
+         (And(
              NRef("WHITESPACE"),
              ';;',
              NRef("WHITESPACE")
-         )
+         ), 0.9)
     )
 )    
 NDef("DLESS",
-     Or(
-         "<<",
-         And(
+     WeightedOr(
+         ("<<", 0.1),
+         (And(
              NRef("WHITESPACE"),
              '<<',
              NRef("WHITESPACE")
-         )
+         ), 0.9)
      )
 )
 NDef("DGREAT",
-     Or(
-         ">>",
-         And(
+     WeightedOr(
+         (">>", 0.1),
+         (And(
              NRef("WHITESPACE"),
              '>>',
              NRef("WHITESPACE")
-         )
+         ), 0.9)
      )
 )
 NDef("LESSAND",
-     Or(
-         "<&",
-         And(
+     WeightedOr(
+         ("<&", 0.1),
+         (And(
              NRef("WHITESPACE"),
              '<&',
              NRef("WHITESPACE")
-         )
+         ), 0.9)
      )
 )
 NDef("GREATAND",
@@ -688,11 +752,11 @@ NDef("CLOBBER",
 )
 NDef("WHITESPACE",
     WeightedOr(
-        (NRef("NEWLINE"), 0.2),
-        (NRef("TAB"), 0.6),
+        (NRef("NEWLINE"), 0.1),
+        (NRef("TAB"), 0.1),
         #(And(NRef("NEWLINE"), NRef("WHITESPACE")), 0.02),
         #(And(NRef("TAB"), NRef("WHITESPACE")), 0.01),
-        (" ", 0.2)
+        (" ", 0.8)
         #(And(" ", NRef("WHITESPACE")), 0.1),
         #(NRef("WHITESPACE"), 0.05)
     )
@@ -792,11 +856,11 @@ pipe_sequence    :                             command
 '''
 NDef("pipeline", Or(
     NRef("pipeline"),
-    And(NRef("Bang"), NRef("pipe_sequence"))
+    And(NRef("Bang"), NRef("WHITESPACE"), NRef("pipe_sequence"))
 ))
 NDef("pipe_sequence", Or(
     NRef("command"),
-    And(NRef("pipe_sequence"), "|", NRef("linebreak"), NRef("command"))
+    And(NRef("pipe_sequence"),NRef("WHITESPACE"), "|",NRef("WHITESPACE"), NRef("linebreak"),NRef("WHITESPACE"), NRef("command"))
 ))
 '''
 command          : simple_command
@@ -878,12 +942,12 @@ case_list        : case_list case_item
                  |           case_item
 '''
 
-NDef("case_clause", Or(And(NRef("Case"),NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
-    And(NRef("Case"), NRef("WORD"), NRef("linebreak"), "in", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
-    And(NRef("Case"),NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"), NRef("Esac"))))
+NDef("case_clause", Or(And(NRef("Case"),NRef("WHITESPACE"),NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
+    And(NRef("Case"), NRef("WHITESPACE"), NRef("WORD"), NRef("linebreak"), "in", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
+    And(NRef("Case"), NRef("WHITESPACE"), NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"), NRef("Esac"))))
 
 NDef("case_list_ns", Or(
-    And(NRef("case_list"), NRef("case_item_ns")),
+    And(NRef("case_list"), NRef("WHITESPACE"), NRef("case_item_ns")),
     NRef("case_item_ns")))
 
 # avoid left recursion
@@ -908,16 +972,16 @@ pattern          :             WORD         /* Apply rule 4 */
                  ;
 '''
 NDef("case_item_ns", Or(
-        And(NRef("pattern"), ")", NRef("linebreak")),
-        And(NRef("pattern"), NRef("compound_list")),
+        And(NRef("pattern"), NRef("WHITESPACE"), ")", NRef("WHITESPACE"), NRef("linebreak")),
+        And(NRef("pattern"), NRef("WHITESPACE"), NRef("compound_list")),
         And("(",NRef("pattern"),")",NRef("linebreak")),
-        And("(",NRef("pattern"),")",NRef("compound_list"))))
+        And("(",NRef("pattern"),")",NRef("WHITESPACE"), NRef("compound_list"))))
 NDef("case_item", Or(
-    And(NRef("pattern"), ")",NRef("linebreak"),NRef("DSEMI"),NRef("linebreak")),
-    And(NRef("pattern"), ")",NRef("compound_list"), NRef("DSEMI"), NRef("linebreak")),
-    And("(",NRef("pattern"),")",NRef("linebreak"),NRef("DSEMI"), NRef("linebreak")),
-    And("(",NRef("pattern"),")",NRef("compound_list"),NRef("DSEMI"),NRef("linebreak"))))
-NDef("pattern", Or("WORD", And(NRef("pattern"), "|",NRef("WORD"),"\"")))
+    And(NRef("pattern"), NRef("WHITESPACE"), ")",NRef("linebreak"),NRef("DSEMI"),NRef("linebreak")),
+    And(NRef("pattern"),NRef("WHITESPACE"), ")",NRef("WHITESPACE"), NRef("compound_list"), NRef("DSEMI"), NRef("linebreak")),
+    And("(",NRef("pattern"),NRef("WHITESPACE"), ")",NRef("linebreak"),NRef("DSEMI"), NRef("linebreak")),
+    And("(",NRef("pattern"),NRef("WHITESPACE"),")",NRef("WHITESPACE"),NRef("compound_list"),NRef("DSEMI"),NRef("linebreak"))))
+NDef("pattern", Or("WORD", And(NRef("pattern"), NRef("WHITESPACE"),"|",NRef("WHITESPACE"),NRef("WORD"),"\"")))
 '''
 if_clause        : If compound_list Then compound_list else_part Fi
                  | If compound_list Then compound_list           Fi
