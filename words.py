@@ -120,7 +120,84 @@ NDef("built-in", Or(
     NRef("unalias_command"),
     NRef("wait_command")
 )
+     '''
+NDef("special-built-ins", Or(
+    NRef("break_command"), 
+    NRef("colon_command"),
+    NRef("continue_command"),
+    NRef("dot_command"),
+    NRef("eval"),
+    NRef("exec"),
+    NRef("exit"),
+    NRef("export"), 
+    NRef("readonly"), 
+    NRef("return"),
+    NRef("set"),
+    NRef("shift"), 
+    NRef("times"),
+    NRef("trap"),
+    NRef("unset")
+    )
 )
+'''
+#
+#    Include this later:
+#     
+'''
+NDef("unspecified_behavior_commands", Or(
+    "alloc",
+    "autoload",
+    "bind",
+    "bindkey",
+    "builtin",
+    "bye",
+    "caller",
+    "cap",
+    "chdir",
+    "clone",
+    "comparguments",
+    "compcall",
+    "compctl",
+    "compdescribe",
+    "compfiles",
+    "compgen",
+    "compgroups",
+    "complete",
+    "compquote",
+    "comptags",
+    "comptry",
+    "compvalues",
+    "declare",
+    "dirs",
+    "disable",
+    "disown",
+    "dosh",
+    "echotc",
+    "echoti",
+    "help",
+    "history",
+    "hist",
+    "let",
+    "local",
+    "login",
+    "logout",
+    "map",
+    "mapfile",
+    "popd",
+    "print",
+    "pushd",
+    "readarray",
+    "repeat",
+    "savehistory",
+    "source",
+    "shopt",
+    "stop",
+    "suspend",
+    "typeset",
+    "whence"
+)
+)
+'''
 #alias
 NDef("alias_command", Or(
     And(
