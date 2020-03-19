@@ -120,26 +120,144 @@ NDef("built-in", Or(
     NRef("unalias_command"),
     NRef("wait_command")
 )
-     '''
+)
 NDef("special-built-ins", Or(
     NRef("break_command"), 
     NRef("colon_command"),
     NRef("continue_command"),
     NRef("dot_command"),
-    NRef("eval"),
-    NRef("exec"),
-    NRef("exit"),
-    NRef("export"), 
-    NRef("readonly"), 
-    NRef("return"),
-    NRef("set"),
-    NRef("shift"), 
-    NRef("times"),
-    NRef("trap"),
-    NRef("unset")
+    NRef("eval_command"),
+    NRef("exec_command"),
+    NRef("exit_command"),
+    NRef("export_command"), 
+    NRef("readonly_command"), 
+    NRef("return_command"),
+    NRef("set_command"),
+    NRef("shift_command"), 
+    NRef("times_command"),
+    NRef("trap_command"),
+    NRef("unset_command")
     )
 )
-'''
+NDef("n",  UInt(odds = [(0.9, [1, 2]),
+                               (0.1, [3, 9])])
+)
+NDef("break_command", WeightedOr(
+    (And(
+        NRef("WHITESPACE"),
+        NRef("break"),
+        NRef("WHITESPACE")),
+     0.9),
+    (And(
+        NRef("WHITESPACE"),
+        NRef("break"),
+        NRef("WHITESPACE"),
+        NRef("n"),
+        NRef("WHITESPACE")),
+     0.1)
+    )
+)
+NDef("break", "break")
+NDef("colon_command", And(NRef("WHITESPACE"), ":", NRef("WHITESPACE")))
+NDef("continue", "continue")
+NDef("continue_command", WeightedOr(
+    (And(NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE")), 0.9),
+    (And(NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE"), NRef("n"), NRef("WHITESPACE")), 0.1)
+    )
+)
+NDef("dot_command", And(NRef("WHITESPACE"), ".", NRef("WHITESPACE"), NRef("filename"), NRef("WHITESPACE")))
+NDef("eval_command", And(
+    NRef("WHITESPACE"),
+    "eval",
+    NRef("WHITESPACE"),
+    NRef("command"),
+    NRef("WHITESPACE")
+))
+NDef("exec_command",  And(
+    NRef("WHITESPACE"),
+    "exec",
+    NRef("WHITESPACE"),
+    NRef("command"),
+    NRef("WHITESPACE")
+))
+     #undefined number for n, can be changed later
+NDef("exit_command",  WeightedOr(
+    (And(
+        NRef("WHITESPACE"),
+        NRef("exit"),
+        NRef("WHITESPACE")), 0.9),
+    (And(
+        NRef("WHITESPACE"),
+        NRef("exit"),
+        NRef("WHITESPACE"),
+        NRef("n"),
+        NRef("WHITESPACE")), 0.1)
+    )
+)
+NDef("exit", "exit")
+NDef("export_command", And(NRef("WHITESPACE"), "export", NRef("WHITESPACE"),
+                           Or(
+                               "-p",
+                               NRef("varname"),
+                               And(NRef("varname"), "=", NRef("WORD"))
+                           ),
+                           NRef("WHITESPACE"))
+     
+)
+NDef("readonly_command", And(NRef("WHITESPACE"), "readonly", NRef("WHITESPACE"),
+                           Or(
+                               "-p",
+                               NRef("varname"),
+                               And(NRef("varname"), "=", NRef("WORD"))
+                           ),
+                           NRef("WHITESPACE"))
+     
+)
+NDef("readonly_command", WeightedOr(
+    (And(
+        NRef("WHITESPACE"),
+        NRef("readonly"),
+        NRef("WHITESPACE")
+    ), 0.9),
+    (And(
+        NRef("WHITESPACE"),
+        NRef("readonly"),
+        NRef("WHITESPACE"),
+        NRef("n"),
+        NRef("WHITESPACE")
+    ), 0.1)
+))
+NDef("readonly", "readonly")
+NDef("shift_command", WeightedOr(
+    (And(
+        NRef("WHITESPACE"),
+        NRef("shift"),
+        NRef("WHITESPACE")
+    ), 0.9),
+    (And(
+        NRef("WHITESPACE"),
+        NRef("shift"),
+        NRef("WHITESPACE"),
+        NRef("n"),
+        NRef("WHITESPACE")
+    ), 0.1)
+    )
+)
+NDef("set_command", And(NRef("WHITESPACE"), "set", NRef("WHITESPACE")))
+NDef("shift", "shift")
+NDef("times_command", And(NRef("WHITESPACE"), "times", NRef("WHITESPACE")))
+NDef("trap_command", And(NRef("WHITESPACE"), "trap", NRef("WHITESPACE")))
+NDef("unset_command", And(NRef("WHITESPACE"), "unset", NRef("WHITESPACE"),
+                          Or(
+                              "-f",
+                              "-fv",
+                              "-v"
+                          ),
+                          NRef("WHITESPACE"),
+                          NRef("varname"),
+                          NRef("WHITESPACE")
+                      )
+)
 #
 #    Include this later:
 #     
@@ -1201,7 +1319,7 @@ NDef("io_file", Or(
     And(NRef("DGREAT"), NRef("filename")),
     And(NRef("LESSGREAT"), NRef("filename")),
     And(NRef("CLOBBER"), NRef("filename"))))
-NDef("filename",  NRef("WORD"))
+NDef("filename",  NRef("WORD")) #does WORD follow guidelines for file name?
 NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
