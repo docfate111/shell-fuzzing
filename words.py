@@ -8,6 +8,7 @@ from weightedOr import *
 # do you mean more valid strings?
 charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 charset_nonspecial_rest="-_+.,/!"
+charset_not_slash="~!@#$%^&*()_+~"
 #the problem with this method is I can't use String()
 #and an NRef object is printed
 NDef("random_string",  String(charset = charset_nonspecial, min=1, max=15))
@@ -239,9 +240,11 @@ NDef("job_id", Or(
     And("%?", NRef("s"))
   )
 )
-NDef("job_number",  UInt(odds = [(0.45, [0, 2]),
-                               (0.45, [3, 9]),
-                               (0.1,  [10, 65535])]))
+PID_MAX_LIMIT=32768
+#99998 for macOS
+NDef("job_number",  UInt(odds = [(0.4, [0, 2]),
+                               (0.4, [3, 9]),
+                               (0.2,  [10, PID_MAX_LIMIT])]))
 #cd
 NDef("posix_directories", Or(
     "/dev",
@@ -250,6 +253,11 @@ NDef("posix_directories", Or(
     "/tmp",
     "/",
     "/dev/console"
+    )
+)
+NDef("possible_directory_names", And(
+    String(charset = charset_nonspecial, min=1, max=20),
+    String(charset = charset_not_slash, min=1, max=7)
     )
 )
 NDef("cd_command", Or(
@@ -262,7 +270,7 @@ NDef("cd_command", Or(
         ),
         NRef("WHITESPACE"),
         Or(
-            NRef("s"),
+            NRef("possible_directory_names"),
             NRef("posix_directories")
         ),
          NRef("WHITESPACE"),
@@ -308,7 +316,7 @@ fc -l [-nr] [first [last]]
 
 fc -s [old=new] [first]
 '''
-NDef("editor", "ex")
+NDef("editor", NRef("s")) #for now
 NDef("number",  UInt(odds = [(0.45, [0, 20]),
                                (0.45, [20, 90]),
                                (0.1,  [90, 65535])]
