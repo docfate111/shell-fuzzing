@@ -1,18 +1,19 @@
 # Generating random programs
 
 - [ ] Finish words
-  + [ ] Fixup HEREDOCS
-- [ ] Statements
+  + [ ] Fixup HEREDOCS ???
+- [X] Statements
   + [X] Simple commands (assignments, commands, redirects)
   + [X] Process control (`|`, `&`, `(...)`)
   + [X] Logic (`&&`, `||`, `!`, `;`)
   + [X] Control (`if`, `while`, `until`, `for`, `case`)
   + [X] Function definition
   
-- [X] WeightedOr 
+- [X] WeightedOr-doesn't work with unwrapped strings (i.e. must be NRef(), And(), Or() etc.)
   
 - [X] Bias towards well known variables (`ENV`, `PATH`, etc.)
 - [X] Bias towards well known shell builtins
+?? Next steps:
 - [ ] Option to not generate calls to real programs (need to watch out for `eval` and `source`/`.`!)
 - [ ] Options to avoid weird behaviors
   + [ ] Implementation defined (e.g., checking pipe termination)
