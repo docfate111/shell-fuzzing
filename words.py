@@ -121,7 +121,7 @@ NDef("built-in", Or(
     NRef("wait_command")
 )
 )
-NDef("special-built-ins", Or(
+NDef("special-built-in", Or(
     NRef("break_command"), 
     NRef("colon_command"),
     NRef("continue_command"),
@@ -243,10 +243,76 @@ NDef("shift_command", WeightedOr(
     ), 0.1)
     )
 )
-NDef("set_command", And(NRef("WHITESPACE"), "set", NRef("WHITESPACE")))
+NDef("return", "return")
+NDef("return_command", WeightedOr(
+    (And(
+        NRef("WHITESPACE"),
+        NRef("return"),
+        NRef("WHITESPACE")
+    ), 0.9),
+    (And(
+        NRef("WHITESPACE"),
+        NRef("return"),
+        NRef("WHITESPACE"),
+        NRef("n"),
+        NRef("WHITESPACE")
+    ), 0.1)
+    )
+)
+NDef("set_command", And(NRef("WHITESPACE"), "set", NRef("WHITESPACE"),
+                        Or("-", "+"),
+                        Or(
+                            And(
+                                String(charset="abCefmnuvx", min=1, max=10),
+                                Or(
+                                    "",
+                                    And(NRef("WHITESPACE"),
+                                        Or(
+                                            "-",
+                                            "+"
+                                        ),
+                                        Or(
+                                            "h",
+                                            "o"
+                                        ),
+                                        Or("",
+                                           And(
+                                               NRef("WHITESPACE"),
+                                               NRef("command")
+                                           )
+                                        )
+                                    )
+                                )),
+                            And("-", Or(
+                                "",
+                                And(
+                                    NRef("WHITESPACE"),
+                                    NRef("command")
+                                )
+                            )
+                            ),
+                            "o",
+                            "h"
+                        ),
+                        NRef("WHITESPACE")
+))
 NDef("shift", "shift")
 NDef("times_command", And(NRef("WHITESPACE"), "times", NRef("WHITESPACE")))
-NDef("trap_command", And(NRef("WHITESPACE"), "trap", NRef("WHITESPACE")))
+NDef("trap_command", And(NRef("WHITESPACE"), "trap", NRef("WHITESPACE"),
+                        And(
+                            Or("",
+                               NRef("command"),
+                               NRef("globalvar")
+                            ),
+                            NRef("WHITESPACE"),
+                            Or(
+                                "",
+                                NRef("command"),
+                                NRef("n")
+                            )
+                        )
+                    )
+)
 NDef("unset_command", And(NRef("WHITESPACE"), "unset", NRef("WHITESPACE"),
                           Or(
                               "-f",
@@ -976,21 +1042,21 @@ These are reserved words, not operator tokens, and are
        '{'       '}'       '!'   
 %token  In
 /*      'in'   */'''
-NDef("If", Or(And("if", NRef("WHITESPACE")), " if "))
-NDef("Then", Or(And("then", NRef("WHITESPACE")), " then "))
-NDef("Else", Or(And("else", NRef("WHITESPACE")), " else "))
-NDef("Elif", Or(And("elif", NRef("WHITESPACE")), " elif "))
-NDef("Fi", Or(And("fi", NRef("WHITESPACE")), " fi "))
-NDef("Do", Or(And("do", NRef("WHITESPACE")), " do "))
-NDef("Done", Or(And("done", NRef("WHITESPACE")), " done "))
-NDef("Case", Or(And("case", NRef("WHITESPACE")), " case "))
-NDef("Esac", Or(And("esac", NRef("WHITESPACE")), " esac "))
-NDef("While", Or(And("while", NRef("WHITESPACE")), " while "))
-NDef("Until",  Or(And("until", NRef("WHITESPACE")), " until "))
-NDef("For", Or(And("for", NRef("WHITESPACE")), " for "))
-NDef("Lbrace", Or(And("{", NRef("WHITESPACE")), " { "))
-NDef("Rbrace", Or(And(NRef("WHITESPACE"), "}"), "}"))
-NDef("Bang", Or(And("!", NRef("WHITESPACE")), "!"))
+NDef("If", And(NRef("WHITESPACE"),"if", NRef("WHITESPACE")))
+NDef("Then", And(NRef("WHITESPACE"),"then", NRef("WHITESPACE")))
+NDef("Else", And(NRef("WHITESPACE"),"else", NRef("WHITESPACE")))
+NDef("Elif", And(NRef("WHITESPACE"),"elif", NRef("WHITESPACE")))
+NDef("Fi", And(NRef("WHITESPACE"),"fi", NRef("WHITESPACE")))
+NDef("Do", And(NRef("WHITESPACE"),"do", NRef("WHITESPACE")))
+NDef("Done", And(NRef("WHITESPACE"), "done", NRef("WHITESPACE")))
+NDef("Case", And(NRef("WHITESPACE"),"case", NRef("WHITESPACE")))
+NDef("Esac", And(NRef("WHITESPACE"),"esac", NRef("WHITESPACE")))
+NDef("While", And(NRef("WHITESPACE"),"while", NRef("WHITESPACE")))
+NDef("Until",  And(NRef("WHITESPACE"),"until", NRef("WHITESPACE")))
+NDef("For", And(NRef("WHITESPACE"),"for", NRef("WHITESPACE")))
+NDef("Lbrace", And(NRef("WHITESPACE"),"{", NRef("WHITESPACE")))
+NDef("Rbrace", And(NRef("WHITESPACE"), "}", NRef("WHITESPACE")))
+NDef("Bang", And(NRef("WHITESPACE"),"!", NRef("WHITESPACE")))
 '''
 /* -------------------------------------------------------
    The Grammar
@@ -1082,6 +1148,7 @@ compound_command : brace_group
 '''
 command = NDef("command",   Or(
     NRef("built-in"),
+    NRef("special-built-in"),
     NRef("simple_command"),
     NRef("compound_command"),
     And(NRef("compound_command"), NRef("redirect_list")),
@@ -1231,7 +1298,7 @@ NDef("function_body", Or(
 NDef("fname",NRef("NAME"))
 NDef("brace_group", Or(And(NRef("Lbrace"),NRef("compound_list"),NRef("Rbrace"))))
 NDef("do_group",And(NRef("Do"),NRef("compound_list"),NRef("Done")))
-simple_command = NDef("simple_command", And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")))
+NDef("simple_command", And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")))
 #     Or(And(NRef("cmd_prefix"),NRef("cmd_word"),NRef("cmd_suffix")),
 #        And(NRef("cmd_prefix"), NRef("cmd_word")),
 #        NRef("cmd_prefix"),
