@@ -1,8 +1,11 @@
 FROM ubuntu
-#1. Write a Vagrantfile that sets up a VM with:
+#1. Write a docker that sets up
 #   a. random generation script.
-#   b. A bunch of shells. At a minimum:
 RUN "sudo apt install git build-essential libreadline-dev"
+RUN "git clone https://github.com/mgree/smoosh-fuzz.git"
+RUN "cd smoosh-fuzz/src/posix"
+RUN "./generateScripts.sh"
+#   b. A bunch of shells. At a minimum:
 RUN "sudo apt-add-repository ppa:fish-shell/release-3"
 RUN "sudo apt-get update"
 #      - dash
