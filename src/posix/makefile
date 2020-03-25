@@ -1,2 +1,2 @@
 clean:
-	rm *~ script*
+	rm -rf testscripts *~
