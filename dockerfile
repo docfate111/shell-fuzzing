@@ -1,13 +1,24 @@
-FROM ubuntu
+FROM ubuntu:18.04
+
+RUN apt-get update && \
+      apt-get -y install sudo
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y git
+USER docker
+#CMD /bin/bash
 #1. Write a docker that sets up
-#   a. random generation script.
-RUN "sudo apt install git build-essential libreadline-dev"
+#   a. random generation script
+RUN "apt install -y git"
+#build-essential"
+#libreadline-dev"
 RUN "git clone https://github.com/mgree/smoosh-fuzz.git"
 RUN "cd smoosh-fuzz/src/posix"
 RUN "./generateScripts.sh"
 #   b. A bunch of shells. At a minimum:
-RUN "sudo apt-add-repository ppa:fish-shell/release-3"
-RUN "sudo apt-get update"
+RUN "apt-add-repository ppa:fish-shell/release-3"
+RUN "apt-get update"
 #      - dash
 #      - yash
 #      - ksh
@@ -20,7 +31,7 @@ RUN "git clone https://github.com/oilshell/oil.git"
 RUN "git submodule update --init --recursive"
 RUN "osh=~/oil/bin/osh
 #      - fish
-RUN "apt install git bash dash yash ksh mksh bosh zsh fish"
+RUN "apt install -y bash dash yash ksh mksh bosh zsh fish"
 #      - bash (3.x, 4.x, and 5.x)
 RUN "git clone https://github.com/MacMiniVault/bash3.2.53.git"
 RUN "bash3='/bash3.2.53/bin/bash'"
@@ -42,7 +53,6 @@ RUN "cd heirloom-sh"
 RUN "make"
 RUN "make install"
 RUN "cd -"
-
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
 #   b. Runs each shell on that script, recording STDOUT, STDERR, exit

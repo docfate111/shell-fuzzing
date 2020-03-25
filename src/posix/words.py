@@ -1,8 +1,16 @@
 from weightedOr import *
+#uncomment this when gramfuzz updates
+#from gramfuzz.fields import *
+#from gramfuzz.utils import *
+#import random
+#class NRef(Ref):
+#    cat = "word"
+#class NDef(Def):
+#    cat = "word"
 # TODO
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
-#of code?
+#of code?x
 # different categories for words and program statements? (not super important)
 # figure out how to generate more strings and fewer special characters
 # do you mean more valid strings?
