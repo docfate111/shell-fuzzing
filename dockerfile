@@ -7,8 +7,9 @@ RUN apt update -y && \
     apt upgrade -y
 #1. Write a docker that sets up
 #   a. random generation script
+RUN "cd ~"
 RUN "git clone https://github.com/mgree/smoosh-fuzz.git"
-RUN "cd smoosh-fuzz/src/posix"
+RUN "cd smoosh-fuzz/src"
 RUN "./generateScripts.sh"
 #   b. A bunch of shells. At a minimum:
 RUN "apt-add-repository -y ppa:fish-shell/release-3"
