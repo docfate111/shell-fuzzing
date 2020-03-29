@@ -1,24 +1,18 @@
 FROM ubuntu:18.04
-
-RUN apt-get update && \
-      apt-get -y install sudo
-RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
-RUN apt update && \
+RUN apt update -y && \
+      apt install -y sudo
+RUN apt update -y && \
     apt upgrade -y && \
-    apt install -y git
-USER docker
-#CMD /bin/bash
+    apt install -y git python3 python3-pip build-essential libreadline-dev software-properties-common && \
+    apt upgrade -y
 #1. Write a docker that sets up
 #   a. random generation script
-RUN "apt install -y git"
-#build-essential"
-#libreadline-dev"
 RUN "git clone https://github.com/mgree/smoosh-fuzz.git"
 RUN "cd smoosh-fuzz/src/posix"
 RUN "./generateScripts.sh"
 #   b. A bunch of shells. At a minimum:
-RUN "apt-add-repository ppa:fish-shell/release-3"
-RUN "apt-get update"
+RUN "apt-add-repository -y ppa:fish-shell/release-3"
+RUN "apt update -y && apt upgrade -y"
 #      - dash
 #      - yash
 #      - ksh

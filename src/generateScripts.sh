@@ -1,5 +1,5 @@
-#!/bin/sh
-pip3 install gramfuzz || python3-pip install gramfuzz
+#!/bin/bash
+pip3 install gramfuzz
 mkdir testscripts
 chmod 777 testscripts
 for x in {1..15}

@@ -2,7 +2,6 @@ from weightedOr import *
 #uncomment this when gramfuzz updates
 #from gramfuzz.fields import *
 #from gramfuzz.utils import *
-#import random
 #class NRef(Ref):
 #    cat = "word"
 #class NDef(Def):
@@ -169,8 +168,13 @@ NDef("break", "break")
 NDef("colon_command", And(NRef("WHITESPACE"), ":", NRef("WHITESPACE")))
 NDef("continue", "continue")
 NDef("continue_command", WeightedOr(
-    (And(NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE")), 0.9),
-    (And(NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE"), NRef("n"), NRef("WHITESPACE")), 0.1)
+    (And(
+        NRef("WHITESPACE"),
+        NRef("continue"),
+        NRef("WHITESPACE")
+    ), 0.9),
+    (And(
+        NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE"), NRef("n"), NRef("WHITESPACE")), 0.1)
     )
 )
 NDef("dot_command", And(NRef("WHITESPACE"), ".", NRef("WHITESPACE"), NRef("filename"), NRef("WHITESPACE")))
