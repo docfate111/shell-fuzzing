@@ -1,2 +1,2 @@
-#!/bin/sh
-docker build -t image .
+#!/bin/bash
+docker build -t testingbox .

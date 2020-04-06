@@ -7,7 +7,8 @@ RUN apt update -y && \
     apt upgrade -y
 #1. Write a docker that sets up
 #   a. random generation script
-RUN "cd ~"
+RUN mkdir -p /var/www/tests
+WORKDIR /var/www/tests
 RUN "git clone https://github.com/mgree/smoosh-fuzz.git"
 RUN "cd smoosh-fuzz/src"
 RUN "./generateScripts.sh"
@@ -21,7 +22,6 @@ RUN "apt update -y && apt upgrade -y"
 #      - bosh
 #      - zsh
 #      - osh
-RUN "cd ~"
 RUN "git clone https://github.com/oilshell/oil.git"
 RUN "git submodule update --init --recursive"
 RUN "osh=~/oil/bin/osh
@@ -35,19 +35,18 @@ RUN "git clone https://github.com/gitGNU/gnu_bash.git"
 RUN "cd gnu_bash"
 RUN "./configure"
 RUN "make"
-RUN "cd .."
 #bash 5.0
 RUN "git clone https://github.com/errodriguez/bash5.git"
 RUN "cd bash5"
 RUN "./configure"
 RUN "make"
-RUN "cd .."
-#      - heirloom SH 
+WORKDIR /var/www/tests
+#      - heirloom SH
 RUN "git clone https://github.com/Sunshine-OS/heirloom-sh.git"
 RUN "cd heirloom-sh"
 RUN "make"
 RUN "make install"
-RUN "cd -"
+WORKDIR /var/www/tests
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
 #   b. Runs each shell on that script, recording STDOUT, STDERR, exit
