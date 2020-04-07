@@ -12,8 +12,7 @@ RUN mkdir -p /var/www/tests
 WORKDIR /var/www/tests
 RUN git clone https://github.com/mgree/smoosh-fuzz.git
 RUN cd smoosh-fuzz/src
-RUN chmod +x generateScripts.sh
-RUN ./generateScripts.sh
+RUN bash generateScripts.sh
 #   b. A bunch of shells. At a minimum:
 RUN apt-add-repository -y ppa:fish-shell/release-3
 RUN apt update -y && apt upgrade -y
