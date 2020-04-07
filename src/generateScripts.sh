@@ -1,7 +1,7 @@
 #!/bin/bash
 pip3 install gramfuzz
-mkdir /var/www/tests/testscripts
+mkdir /home/tests/testscripts
 for x in {1..15}
 do
-    python3 main.py >> '/var/www/tests/testscripts/script'$x'.sh'
+    python3 main.py >> '/home/tests/testscripts/script'$x'.sh'
 done
