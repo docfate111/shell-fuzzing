@@ -19,7 +19,7 @@ def bisect(a, x, lo=0, hi=None):
         if x < a[mid]: hi = mid
         else: lo = mid+1
     return lo
-def choices(population, weights=None, *, cum_weights=None, k=1):
+def choices(population, weights=None, cum_weights=None, k=1):
     if cum_weights is None:
         if weights is None:
             total = len(population)
