@@ -1,11 +1,15 @@
 from weightedOr import *
+
 #uncomment this when gramfuzz updates
-#from gramfuzz.fields import *
-#from gramfuzz.utils import *
-#class NRef(Ref):
-#    cat = "word"
-#class NDef(Def):
-#    cat = "word"
+'''
+from gramfuzz.fields import *
+from gramfuzz.utils import *
+class NRef(Ref):
+    cat = "word"
+class NDef(Def):
+    cat = "word"
+'''
+
 # TODO
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
@@ -29,7 +33,7 @@ NDef("s", And(
     #String(charset=charset_nonspecial_rest, min=1, max=10),
      #0.1),
     #NRef("parens"), #0.9),
-    #NRef("tilde") #, 0.1) 
+    #NRef("tilde") #, 0.1)
 #print(NRef("s"))
 NDef("~", "~")
 NDef("tilde", WeightedOr(
@@ -37,7 +41,7 @@ NDef("tilde", WeightedOr(
     (NRef("parens"), 0.1),
     (NRef("~"), 0.1)
 )
-) 
+)
     #(And(
         #"~",
      #   String(charset=String.charset_alpha, min=1, max=1),
@@ -79,10 +83,10 @@ Def("charset_special_conditions_for_quoting", Or("*", "?", "[", "#", "˜", "=", 
 #NDef("header", "#!/bin/")
 #for beginning of programs i.e. #!/bin/zsh
 '''Not posix but in shells:
-    [[ ]]	
-    function	
+    [[ ]]
+    function
     select
-  other bashisms(for me to implement later): https://mywiki.wooledge.org/Bashism 
+  other bashisms(for me to implement later): https://mywiki.wooledge.org/Bashism
 '''
 NDef("globalvar",
      Or(
@@ -129,18 +133,18 @@ NDef("built-in", Or(
 )
 )
 NDef("special-built-in", Or(
-    NRef("break_command"), 
+    NRef("break_command"),
     NRef("colon_command"),
     NRef("continue_command"),
     NRef("dot_command"),
     NRef("eval_command"),
     NRef("exec_command"),
     NRef("exit_command"),
-    NRef("export_command"), 
-    NRef("readonly_command"), 
+    NRef("export_command"),
+    NRef("readonly_command"),
     NRef("return_command"),
     NRef("set_command"),
-    NRef("shift_command"), 
+    NRef("shift_command"),
     NRef("times_command"),
     NRef("trap_command"),
     NRef("unset_command")
@@ -214,7 +218,7 @@ NDef("export_command", And(NRef("WHITESPACE"), "export", NRef("WHITESPACE"),
                                And(NRef("varname"), "=", NRef("WORD"))
                            ),
                            NRef("WHITESPACE"))
-     
+
 )
 NDef("readonly_command", And(NRef("WHITESPACE"), "readonly", NRef("WHITESPACE"),
                            Or(
@@ -223,7 +227,7 @@ NDef("readonly_command", And(NRef("WHITESPACE"), "readonly", NRef("WHITESPACE"),
                                And(NRef("varname"), "=", NRef("WORD"))
                            ),
                            NRef("WHITESPACE"))
-     
+
 )
 NDef("readonly_command", WeightedOr(
     (And(
@@ -338,7 +342,7 @@ NDef("unset_command", And(NRef("WHITESPACE"), "unset", NRef("WHITESPACE"),
 )
 #
 #    Include this later:
-#     
+#
 '''
 NDef("unspecified_behavior_commands", Or(
     "alloc",
@@ -641,7 +645,7 @@ NDef("fc_command", And(
                           NRef("WHITESPACE"),
                      )
                  )
-             )   
+             )
          ),
          And(
              "-l",
@@ -686,9 +690,9 @@ NDef("fg_command", Or(
     )
  )
 )
-#getopts: 
+#getopts:
 '''
-how to implement? opstring as $options?    
+how to implement? opstring as $options?
 getopts optstring name [arg...]
 '''
 NDef("getopts_command", And("getopts",  NRef("WHITESPACE"), NRef("s"),  NRef("WHITESPACE"), NRef("varname")))
@@ -706,18 +710,18 @@ NDef("jobs_command", And(
                      NRef("WHITESPACE"),
                      NRef("job_id"),
                       NRef("WHITESPACE")
-                     
+
 ))
 #kill
 NDef("signal_name", Or(
-     "SIGABRT",	
+     "SIGABRT",
      "SIGALRM",
      "SIGBUS",
-     "SIGCHLD",	
+     "SIGCHLD",
      "SIGCONT",
      "SIGFPE",
      "SIGHUP",
-     "SIGILL",	
+     "SIGILL",
      "SIGINT",
      "SIGKILL",
      "SIGPIPE",
@@ -730,7 +734,7 @@ NDef("signal_name", Or(
      "SIGTTOU",
      "SIGUSR1",
      "SIGUSR2",
-     "SIGPOLL"	
+     "SIGPOLL"
      "SIGPROF",
      "SIGSYS",
      "SIGTRAP",
@@ -745,7 +749,7 @@ kill -l [exit_status]
 
 [XSI] [Option Start] kill [-signal_name] pid...
 
-kill [-signal_number] pid... 
+kill [-signal_number] pid...
 '''
 NDef("kill_command", And("kill", NRef("WHITESPACE"),
                          Or(
@@ -804,7 +808,7 @@ NDef("read_command", And("read", NRef("WHITESPACE"),
 #true
 NDef("true_command", "true")
 #type
-NDef("type_command", And("type", NRef("WHITESPACE"), NRef("varname"),  NRef("WHITESPACE"))) 
+NDef("type_command", And("type", NRef("WHITESPACE"), NRef("varname"),  NRef("WHITESPACE")))
 #ulimit ulimit [-f] [blocks][Option End]
 NDef("ulimit_command", And("ulimit", NRef("WHITESPACE"),
                            Or(
@@ -827,7 +831,7 @@ NDef("umask_command", And("umask", NRef("WHITESPACE"),
                                    NRef("WHITESPACE")
                               )
                         )
-                          
+
                        )
      )
 #unalias
@@ -838,7 +842,7 @@ NDef("unalias_command", And("unalias", NRef("WHITESPACE"),
                             ),
                              NRef("WHITESPACE")
                             )
-)   
+)
 #wait
 NDef("wait_command", And("wait", NRef("WHITESPACE"),
                          Or(
@@ -872,7 +876,7 @@ NDef("NAME", WeightedOr(
     (Or("@", "*", "#", "?", "-", "$", "!"), 0.1)))
 #these parens can have parens inside themselves:
 NDef("recursableparens",Or(
-    And("${", NRef("WHITESPACE"), NRef("NAME"), NRef("WHITESPACE"), "}"), 
+    And("${", NRef("WHITESPACE"), NRef("NAME"), NRef("WHITESPACE"), "}"),
     And("${#", NRef("WHITESPACE"), NRef("NAME"), NRef("WHITESPACE"), "}"),
     And("${", NRef("WHITESPACE"), And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), NRef("WHITESPACE"), "}"))),)
 NDef("parens",Or(
@@ -926,16 +930,16 @@ NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
 NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
                                (0.45, [3, 9]),
-                               (0.1,  [10, 65535])])) 
+                               (0.1,  [10, 65535])]))
 '''
 The following are the operators (see XBD Operator)
-   containing more than one character. 
+   containing more than one character.
 %token  AND_IF    OR_IF    DSEMI
-         '&&'      '||'     ';;'    
+         '&&'      '||'     ';;'
 %token  DLESS  DGREAT  LESSAND  GREATAND  LESSGREAT  DLESSDASH
         '<<'   '>>'    '<&'     '>&'      '<>'       '<<-'   */
 %token  CLOBBER
-          '>|'  
+          '>|'
 '''
 NDef("AND_IF",
      And(
@@ -960,7 +964,7 @@ NDef("DSEMI",
              NRef("WHITESPACE")
          ), 0.9)
     )
-)    
+)
 NDef("DLESS",
      WeightedOr(
          ("<<", 0.1),
@@ -1045,13 +1049,13 @@ NDef("WHITESPACE",
 '''
 /* The following are the reserved words. */
 %token  If    Then    Else    Elif    Fi    Do    Done
-      'if'  'then'  'else'  'elif'  'fi'  'do'  'done'   
+      'if'  'then'  'else'  'elif'  'fi'  'do'  'done'
 %token  Case    Esac    While    Until    For
-     'case'  'esac'  'while'  'until'  'for'  
+     'case'  'esac'  'while'  'until'  'for'
 These are reserved words, not operator tokens, and are
-   recognized when reserved words are recognized. 
+   recognized when reserved words are recognized.
 %token  Lbrace    Rbrace    Bang
-       '{'       '}'       '!'   
+       '{'       '}'       '!'
 %token  In
 /*      'in'   */'''
 NDef("If", And(NRef("WHITESPACE"),"if", NRef("WHITESPACE")))
@@ -1096,8 +1100,8 @@ Def("program",
     ),
     cat="program")
 # avoid left recursion
-#NDef("complete_commands", 
-#     Or(And(NRef("complete_commands"), NRef("newline_list"), NRef("complete_command")),  
+#NDef("complete_commands",
+#     Or(And(NRef("complete_commands"), NRef("newline_list"), NRef("complete_command")),
 #        NRef("complete_command")))
 NDef("complete_commands",
      And(
@@ -1123,7 +1127,7 @@ and_or           :                         pipeline
                  ;
 '''
 NDef("list", Or(And(NRef("list"), NRef("separator_op"), NRef("and_or")), NRef("and_or")))
-NDef("and_or", Or(NRef("pipeline"), 
+NDef("and_or", Or(NRef("pipeline"),
                 And(NRef("and_or"), NRef("AND_IF"), NRef("linebreak"), NRef("pipeline")),
                 And(NRef("and_or"), NRef("OR_IF"), NRef("linebreak"), NRef("pipeline"))
 ))
@@ -1187,7 +1191,7 @@ NDef("subshell", And('(', NRef("compound_list"), ")"))
 NDef("compound_list", Or(
     And(NRef("linebreak"), NRef("term")),
     And(NRef("linebreak"), NRef("term"), NRef("separator"))))
-NDef("term", Or(NRef("true_command"), NRef("false_command"), 
+NDef("term", Or(NRef("true_command"), NRef("false_command"),
     And(NRef("term"), NRef("separator"), NRef("and_or")),
         NRef("and_or")))
 '''
@@ -1239,7 +1243,7 @@ NDef("case_list_ns", Or(
 NDef("case_list", Join(NRef("case_item"), sep=""))
 
 '''
-case_item_ns     :     pattern ')' linebreak    
+case_item_ns     :     pattern ')' linebreak
                  |     pattern ')' compound_list
                  | '(' pattern ')' linebreak
                  | '(' pattern ')' compound_list
@@ -1379,7 +1383,7 @@ NDef("cmd_word", NRef("WORD"))
 #            NRef("ASSIGNMENT_WORD")),
 #            And(NRef("cmd_prefix"), NRef("ASSIGNMENT_WORD")))
 NDef("cmd_prefix", Join(Or(NRef("io_redirect"), NRef("ASSIGNMENT_WORD")), sep=" "))
-#NDef("cmd_suffix", Or(NRef("io_redirect"), 
+#NDef("cmd_suffix", Or(NRef("io_redirect"),
 #                      And(NRef("cmd_suffix"), NRef("io_redirect")),
 #                      NRef("WORD"),
 #                      And(NRef("cmd_suffix"), NRef("WORD"))))

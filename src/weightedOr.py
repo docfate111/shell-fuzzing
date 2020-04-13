@@ -1,6 +1,6 @@
 from gramfuzz.fields import *
 from gramfuzz.utils import *
-import random
+import myrandom
 class NRef(Ref):
     cat = "word"
 class NDef(Def):
@@ -26,7 +26,7 @@ class WeightedOr(Field):
     def build(self, pre=None, shortest=False):
         """
         :param list pre: The prerequisites list
-        :param bool shortest: Whether or not the shortest reference-chain (most minimal) 
+        :param bool shortest: Whether or not the shortest reference-chain (most minimal)
         version of the field should be generated.
         """
         #self.values=list(map(val, self.values))
@@ -36,14 +36,9 @@ class WeightedOr(Field):
         # self.shortest_vals will be set by the GramFuzzer and will
         # contain a list of value options that have a minimal reference chain
         if shortest and self.shortest_vals is not None:
-            return utils.val(random.choices(self.shortest_vals, self.weights)[0], pre, shortest=shortest)
+            return utils.val(myrandom.choices(self.shortest_vals, self.weights)[0], pre, shortest=shortest)
         else:
-            return utils.val(random.choices(self.values, self.weights)[0], pre, shortest=shortest)
-    #def build(self, pre=None, shortest=False):
-    #    s=self.helperbuild(pre=None, shortest=False).decode('utf-8')
-    #    start=s.find('[')+3
-    #    end=s.find(']')-1
-    #    return bytes(s[start:end], 'utf-8')
+            return utils.val(myrandom.choices(self.values, self.weights)[0], pre, shortest=shortest)
 NDef("a", "a string")
 NDef("B", NRef("a"))
 NDef("c", "c string")
@@ -71,7 +66,3 @@ assert(type(x.build())==bytes)
 #print(y)
 #print(y.build())
 assert(type(y.build())==bytes)
-
-
-
-

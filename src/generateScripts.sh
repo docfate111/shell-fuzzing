@@ -1,5 +1,5 @@
 #!/bin/bash
-pip3 install gramfuzz
+pip install gramfuzz
 #pip install gramfuzz
 mkdir /home/tests/testscripts
 for x in {1..15}
