@@ -1,6 +1,10 @@
 
 import random
-import itertools
+def accumulate(iterator):
+    total = 0
+    for item in iterator:
+        total += item
+        yield total
 def bisect(a, x, lo=0, hi=None):
     """Return the index where to insert item x in list a, assuming a is sorted.
     The return value i is such that all e in a[:i] have e <= x, and all e in
@@ -24,7 +28,7 @@ def choices(population, weights=None, cum_weights=None, k=1):
         if weights is None:
             total = len(population)
             return [population[int(random.random() * total)] for i in range(k)]
-        cum_weights = list(itertools.accumulate(weights))
+        cum_weights = list(accumulate(weights))
     elif weights is not None:
         raise TypeError('Cannot specify both weights and cumulative weights')
     if len(cum_weights) != len(population):
