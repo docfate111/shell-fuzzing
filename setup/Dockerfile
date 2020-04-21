@@ -9,7 +9,7 @@ RUN apt-get update -y && \
     npm install -g npm && \
     npm install command-exists colors && \
     apt-get update -y && \
-    apt-get upgrade -y 
+    apt-get upgrade -y
 WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
@@ -25,12 +25,14 @@ RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
    apt install -y bash dash yash ksh mksh bosh zsh fish && \
 #      - bash (3.x, 4.x, and 5.x)
    git clone https://github.com/MacMiniVault/bash3.2.53.git && \
-   cp /home/bash3.2.53/bin/bash /usr/local/bin/bash3 && \
+   cd bash3.2.53
+COPY bin/bash /usr/local/bin/bash3
+WORKDIR /home/tests
   #bash 4.4
-  git clone https://github.com/gitGNU/gnu_bash.git && \
-  cd gnu_bash && \
-  ./configure && \
-  make
+RUN git clone https://github.com/gitGNU/gnu_bash.git && \
+    cd gnu_bash && \
+    ./configure && \
+    make
 COPY bash /usr/local/bin/bash4
 WORKDIR /home/tests
 #bash 5.0
