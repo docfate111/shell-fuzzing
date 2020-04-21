@@ -39,30 +39,3 @@ class WeightedOr(Field):
             return utils.val(myrandom.choices(self.shortest_vals, self.weights)[0], pre, shortest=shortest)
         else:
             return utils.val(myrandom.choices(self.values, self.weights)[0], pre, shortest=shortest)
-NDef("a", "a string")
-NDef("B", NRef("a"))
-NDef("c", "c string")
-NDef("d", "d string")
-y=Or(NRef("a"), NRef("B"), NRef("c"))
-x=y=Or(NRef("a"), NRef("B"), NRef("c"))
-x=WeightedOr(
-    (NRef("c"), 0.25),
-    (NRef("B"), 0.25),
-    (NRef("a"), 0.25),
-    (NRef("r"), 0.25)
-)
-NDef("r", WeightedOr(
-    (NRef("r"), 0.25),
-    (And(
-        NRef("B"),
-        NRef("r")
-     ), 0.25),
-    (NRef("B"), 0.25),
-    (NRef("d"), 0.25)
-))
-#print(x)
-#print(x.build())
-assert(type(x.build())==bytes)
-#print(y)
-#print(y.build())
-assert(type(y.build())==bytes)
