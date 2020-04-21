@@ -30,17 +30,11 @@ WORKDIR /home/tests
 RUN git clone https://github.com/grml/heirloom-sh && \
     cd heirloom-sh/ && \
     make && mv /home/tests/heirloom-sh/sh /usr/local/bin/heirloom-sh
-RUN cd /home/tests/smoosh-fuzz/src/bash-3.0.16/ && \
-    ./configure && \
-    make && mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
+#RUN mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
 WORKDIR /home/tests
-RUN cd /home/tests/src/bash-4/ && \
-    ./configure && \
-    make && mv /home/tests/smoosh-fuzz/src/bash-4/bash /usr/local/bin/bash4
+RUN mv /home/tests/smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4
 WORKDIR /home/tests
-RUN cd /home/tests/src/bash-5/ && \
-    ./configure && \
-    make && mv /home/tests/smoosh-fuzz/src/bash-5/bash /usr/local/bin/bash5
+RUN mv /home/tests/smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5
 WORKDIR /home/tests
 #    - osh isnt working
 RUN git clone https://github.com/oilshell/oil.git && \
