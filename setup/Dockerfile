@@ -3,16 +3,16 @@ RUN apt-get update -y && \
     apt-get upgrade -y && \
     apt-get install -y git nodejs npm python python-pip build-essential libreadline-dev software-properties-common && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
-    apt-get update -y && \
-    apt-get upgrade -y && \
 #1. Write a docker that sets up
 #   a. random generation script
     mkdir -p /home/tests && \
     npm install -g npm && \
-    npm install command-exists colors
+    npm install command-exists colors && \
+    apt-get update -y && \
+    apt-get upgrade -y 
 WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
-    cd smoosh-fuzz/src && \
+    cd smoosh-fuzz/src/scriptGeneration && \
     ./generateScripts.sh 15 && \
 #   b. A bunch of shells. At a minimum:
 #      - dash
