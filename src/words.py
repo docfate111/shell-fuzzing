@@ -1,5 +1,4 @@
 from weightedOr import *
-
 #uncomment this when gramfuzz updates
 '''
 from gramfuzz.fields import *
@@ -9,7 +8,6 @@ class NRef(Ref):
 class NDef(Def):
     cat = "word"
 '''
-
 # TODO
 # generalize whitespace to zero-or-more space or tabs
 # clean up formatting
@@ -1037,11 +1035,11 @@ NDef("CLOBBER",
 )
 NDef("WHITESPACE",
     WeightedOr(
-        (NRef("NEWLINE"), 0.1),
-        (NRef("TAB"), 0.1),
+        (NRef("NEWLINE"), 0.02),
+        (NRef("TAB"), 0.02),
         #(And(NRef("NEWLINE"), NRef("WHITESPACE")), 0.02),
         #(And(NRef("TAB"), NRef("WHITESPACE")), 0.01),
-        (" ", 0.8)
+        (" ", 0.96)
         #(And(" ", NRef("WHITESPACE")), 0.1),
         #(NRef("WHITESPACE"), 0.05)
     )
