@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git node npm python python-pip build-essential libreadline-dev software-properties-common && \
+    apt-get install -y git nodejs npm python python-pip build-essential libreadline-dev software-properties-common && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
     apt-get update -y && \
     apt-get upgrade -y && \
@@ -30,27 +30,28 @@ RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
   git clone https://github.com/gitGNU/gnu_bash.git && \
   cd gnu_bash && \
   ./configure && \
-  make &&
-  cp bash /usr/local/bin/bash4
+  make
+COPY bash /usr/local/bin/bash4
 WORKDIR /home/tests
 #bash 5.0
 RUN git clone https://github.com/errodriguez/bash5.git && \
     cd bash5 && \
     ./configure && \
-    make && \
-    cp bash /usr/local/bin/bash5
+    make
+COPY bash /usr/local/bin/bash5
 WORKDIR /home/tests
 #      - heirloom SH
 RUN git clone https://github.com/grml/heirloom-sh && \
     cd heirloom-sh/ && \
-    make && \
-    cp sh /usr/local/bin/heirloom-sh
+    make
+COPY sh /usr/local/bin/heirloom-sh
 WORKDIR /home/tests
 #    - osh isnt working
 RUN git clone https://github.com/oilshell/oil.git && \
  cd oil && \
- git submodule update --init --recursive && \
- cp osh /usr/local/bin/osh
+ git submodule update --init --recursive
+COPY osh /usr/local/bin/osh
+WORKDIR /home/tests
 RUN node /home/tests/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
