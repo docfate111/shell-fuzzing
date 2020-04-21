@@ -11,7 +11,7 @@ RUN apt-get update -y && \
     npm install command-exists colors && \
     apt-get update -y && \
     apt-get upgrade -y
-WORKDIR /home
+WORKDIR /home/tests
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
     ./generateScripts.sh 15 && \
@@ -29,25 +29,22 @@ WORKDIR /home/tests
 #      - heirloom SH
 RUN git clone https://github.com/grml/heirloom-sh && \
     cd heirloom-sh/ && \
-    make
-COPY /home/tests/heirloom-sh/sh /usr/local/bin/heirloom-sh
-RUN cd src/bash-3.0.16/ && \
+    make && mv /home/tests/heirloom-sh/sh /usr/local/bin/heirloom-sh
+RUN cd /home/tests/smoosh-fuzz/src/bash-3.0.16/ && \
     ./configure && \
-    make
-COPY /home/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
+    make && mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
 WORKDIR /home/tests
-RUN cd src/bash-4/ && \
+RUN cd /home/tests/src/bash-4/ && \
     ./configure && \
-    make
-COPY /home/tests/src/bash-4/bash /usr/local/bin/bash4
+    make && mv /home/tests/smoosh-fuzz/src/bash-4/bash /usr/local/bin/bash4
 WORKDIR /home/tests
-RUN cd src/bash-5/ && \
+RUN cd /home/tests/src/bash-5/ && \
     ./configure && \
-    make
-COPY /home/tests/src/bash-5/bash /usr/local/bin/bash5
+    make && mv /home/tests/smoosh-fuzz/src/bash-5/bash /usr/local/bin/bash5
 WORKDIR /home/tests
 #    - osh isnt working
-#RUN git clone https://github.com/oilshell/oil.git && \
+RUN git clone https://github.com/oilshell/oil.git && \
+    git submodule update
 # cd oil && \
 # git submodule update --init --recursive
 #COPY osh /usr/local/bin/osh
