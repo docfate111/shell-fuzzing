@@ -32,18 +32,17 @@ RUN git clone https://github.com/grml/heirloom-sh && \
     make && mv /home/tests/heirloom-sh/sh /usr/local/bin/heirloom-sh
 #RUN mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
 WORKDIR /home/tests
-RUN mv /home/tests/smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4
-WORKDIR /home/tests
-RUN mv /home/tests/smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5
-WORKDIR /home/tests
+RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
+    mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5
+#WORKDIR /home/tests
 #    - osh isnt working
-RUN git clone https://github.com/oilshell/oil.git && \
-    git submodule update
+#RUN git clone https://github.com/oilshell/oil.git && \
+#    git submodule update
 # cd oil && \
 # git submodule update --init --recursive
 #COPY osh /usr/local/bin/osh
 #WORKDIR /home/tests
-CMD node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
+RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
 #   b. Runs each shell on that script, recording STDOUT, STDERR, exit
