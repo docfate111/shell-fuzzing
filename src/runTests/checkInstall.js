@@ -16,7 +16,7 @@ function runScripts(shls, n){
   var output=[];
   for(var s=0; s<shls.length; s++){
     for(var i=1; i<n; i++){
-      output.push(shls[s]+' ~/home/tests/testscripts/script'+n+'.sh');
+      output.push(shls[s]+' /home/tests/testscripts/script'+n+'.sh');
     }
   }
   return output;

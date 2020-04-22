@@ -8,7 +8,7 @@ RUN apt-get update -y && \
     mkdir -p /home/tests && \
     npm install -g npm && \
       npm init --yes && \
-    npm install command-exists colors && \
+    npm install command-exists colors shelljs.exec command-exists && \
     apt-get update -y && \
     apt-get upgrade -y
 WORKDIR /home/tests
