@@ -1,16 +1,14 @@
 # Generating random programs
 
-- [ ] Finish words
+- [X] Finish words
   + [ ] Fixup HEREDOCS ???
 - [X] Statements
   + [X] Simple commands (assignments, commands, redirects)
   + [X] Process control (`|`, `&`, `(...)`)
   + [X] Logic (`&&`, `||`, `!`, `;`)
   + [X] Control (`if`, `while`, `until`, `for`, `case`)
-  + [X] Function definition
-  
-- [X] WeightedOr-doesn't work with unwrapped strings (i.e. must be NRef(), And(), Or() etc.)
-  
+  + [X] Function definition 
+- [X] WeightedOr-doesn't work with unwrapped strings (i.e. must be NRef(), And(), Or() etc.)  
 - [X] Bias towards well known variables (`ENV`, `PATH`, etc.)
 - [X] Bias towards well known shell builtins
 ?? Next steps:
@@ -23,10 +21,10 @@
 # Linking up with afl-fuzz
 
 - [ ] Sandboxing
-- [ ] Use random programs as a test corpus
+- [X] Use random programs as a test corpus
 - [ ] Use [smoosh tests](https://github.com/mgree/smoosh/blob/master/tests) as a corpus
-- [ ] Compare shells on different programs
-  + [ ] Build VM that can hold all of the shells
+- [X] Compare shells on different programs
+  + [X] Build VM that can hold all of the shells
 
 # Things to look at
 
