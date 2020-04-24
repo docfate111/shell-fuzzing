@@ -20,13 +20,8 @@ charset_nonspecial_rest="-_+.,/!"
 charset_not_slash="~!@#$%^&*()_+~"
 #the problem with this method is I can't use String()
 #and an NRef object is printed
-NDef("random_string",  String(charset = charset_nonspecial, min=1, max=15))
-NDef("s", And(
-    NRef("WHITESPACE"),
-    NRef("random_string"),
-    NRef("WHITESPACE")
-)
-)
+NDef("s",  String(charset = charset_nonspecial, min=1, max=25))
+
     #, 0.8),
     #String(charset=charset_nonspecial_rest, min=1, max=10),
      #0.1),
@@ -71,21 +66,7 @@ NDef("representsitself", Or(
                          )
 )
 NDef("digit", Or("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"))
-'''
-Will implement this later:
-and the following may need to be quoted under certain circumstances. That is, these characters may be special depending on conditions described elsewhere in this volume of POSIX.1-2017:
-
-*   ?   [   #   ˜   =   %
-'''
 Def("charset_special_conditions_for_quoting", Or("*", "?", "[", "#", "˜", "=", "%"))
-#NDef("header", "#!/bin/")
-#for beginning of programs i.e. #!/bin/zsh
-'''Not posix but in shells:
-    [[ ]]
-    function
-    select
-  other bashisms(for me to implement later): https://mywiki.wooledge.org/Bashism
-'''
 NDef("globalvar",
      Or(
          "ENV",
@@ -154,106 +135,132 @@ NDef("n",  UInt(odds = [(0.9, [1, 2]),
 NDef("break_command", WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("break"),
-        NRef("WHITESPACE")),
-     0.9),
+        NRef("break")
+     ), 0.9),
     (And(
         NRef("WHITESPACE"),
         NRef("break"),
         NRef("WHITESPACE"),
-        NRef("n"),
-        NRef("WHITESPACE")),
+        NRef("n")
+    ),
      0.1)
     )
 )
 NDef("break", "break")
-NDef("colon_command", And(NRef("WHITESPACE"), ":", NRef("WHITESPACE")))
+NDef("colon_command",
+And(
+    NRef("WHITESPACE"),
+    ":"
+    )
+)
 NDef("continue", "continue")
 NDef("continue_command", WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("continue"),
-        NRef("WHITESPACE")
+        NRef("continue")
     ), 0.9),
     (And(
-        NRef("WHITESPACE"), NRef("continue"), NRef("WHITESPACE"), NRef("n"), NRef("WHITESPACE")), 0.1)
+        NRef("WHITESPACE"),
+        NRef("continue"),
+        NRef("WHITESPACE"),
+        NRef("n")
+        ), 0.1)
     )
 )
-NDef("dot_command", And(NRef("WHITESPACE"), ".", NRef("WHITESPACE"), NRef("filename"), NRef("WHITESPACE")))
+NDef("dot_command", And(
+                        NRef("WHITESPACE"),
+                        ".",
+                        NRef("WHITESPACE"),
+                        NRef("filename")
+                        )
+)
 NDef("eval_command", And(
-    NRef("WHITESPACE"),
-    "eval",
-    NRef("WHITESPACE"),
-    NRef("command"),
-    NRef("WHITESPACE")
-))
+                        NRef("WHITESPACE"),
+                        "eval",
+                        NRef("WHITESPACE"),
+                        NRef("command")
+                        )
+)
 NDef("exec_command",  And(
-    NRef("WHITESPACE"),
-    "exec",
-    NRef("WHITESPACE"),
-    NRef("command"),
-    NRef("WHITESPACE")
-))
+                        NRef("WHITESPACE"),
+                        "exec",
+                        NRef("WHITESPACE"),
+                        NRef("command")
+                        )
+)
      #undefined number for n, can be changed later
 NDef("exit_command",  WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("exit"),
-        NRef("WHITESPACE")), 0.9),
+        NRef("exit")
+    ), 0.9),
     (And(
         NRef("WHITESPACE"),
         NRef("exit"),
         NRef("WHITESPACE"),
-        NRef("n"),
-        NRef("WHITESPACE")), 0.1)
+        NRef("n")
+    ), 0.1)
     )
-)
+    )
 NDef("exit", "exit")
-NDef("export_command", And(NRef("WHITESPACE"), "export", NRef("WHITESPACE"),
-                           Or(
+NDef("export_command", And(NRef("WHITESPACE"),
+                            "export",
+                            NRef("WHITESPACE"),
+                            Or(
                                "-p",
                                NRef("varname"),
-                               And(NRef("varname"), "=", NRef("WORD"))
-                           ),
-                           NRef("WHITESPACE"))
-
+                               And(
+                                    NRef("varname"),
+                                    Or("=",
+                                    And(
+                                        NRef("WHITESPACE"),
+                                        "=",
+                                        NRef("WHITESPACE")
+                                    )),
+                                  NRef("WORD"))
+                            ))
 )
-NDef("readonly_command", And(NRef("WHITESPACE"), "readonly", NRef("WHITESPACE"),
-                           Or(
+NDef("readonly_command", And(
+                            NRef("WHITESPACE"),
+                            "readonly",
+                            Or(
                                "-p",
                                NRef("varname"),
-                               And(NRef("varname"), "=", NRef("WORD"))
-                           ),
-                           NRef("WHITESPACE"))
-
+                               And(NRef("varname"),
+                                    Or("=",
+                                        And(
+                                            NRef("WHITESPACE"),
+                                            "=",
+                                            NRef("WHITESPACE")
+                                            )
+                                    ),
+                                    NRef("WORD"))
+                           )
+                           )
 )
 NDef("readonly_command", WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("readonly"),
-        NRef("WHITESPACE")
+        NRef("readonly")
     ), 0.9),
     (And(
         NRef("WHITESPACE"),
         NRef("readonly"),
         NRef("WHITESPACE"),
-        NRef("n"),
-        NRef("WHITESPACE")
+        NRef("n")
     ), 0.1)
 ))
 NDef("readonly", "readonly")
 NDef("shift_command", WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("shift"),
-        NRef("WHITESPACE")
+        NRef("shift")
     ), 0.9),
     (And(
         NRef("WHITESPACE"),
         NRef("shift"),
         NRef("WHITESPACE"),
-        NRef("n"),
-        NRef("WHITESPACE")
+        NRef("n")
     ), 0.1)
     )
 )
@@ -261,19 +268,20 @@ NDef("return", "return")
 NDef("return_command", WeightedOr(
     (And(
         NRef("WHITESPACE"),
-        NRef("return"),
-        NRef("WHITESPACE")
+        NRef("return")
     ), 0.9),
     (And(
         NRef("WHITESPACE"),
         NRef("return"),
         NRef("WHITESPACE"),
-        NRef("n"),
-        NRef("WHITESPACE")
+        NRef("n")
     ), 0.1)
     )
 )
-NDef("set_command", And(NRef("WHITESPACE"), "set", NRef("WHITESPACE"),
+NDef("set_command", And(
+                    NRef("WHITESPACE"),
+                    "set",
+                    NRef("WHITESPACE"),
                         Or("-", "+"),
                         Or(
                             And(
@@ -307,8 +315,7 @@ NDef("set_command", And(NRef("WHITESPACE"), "set", NRef("WHITESPACE"),
                             ),
                             "o",
                             "h"
-                        ),
-                        NRef("WHITESPACE")
+                        )
 ))
 NDef("shift", "shift")
 NDef("times_command", And(NRef("WHITESPACE"), "times", NRef("WHITESPACE")))
@@ -334,68 +341,9 @@ NDef("unset_command", And(NRef("WHITESPACE"), "unset", NRef("WHITESPACE"),
                               "-v"
                           ),
                           NRef("WHITESPACE"),
-                          NRef("varname"),
-                          NRef("WHITESPACE")
+                          NRef("varname")
                       )
 )
-#
-#    Include this later:
-#
-'''
-NDef("unspecified_behavior_commands", Or(
-    "alloc",
-    "autoload",
-    "bind",
-    "bindkey",
-    "builtin",
-    "bye",
-    "caller",
-    "cap",
-    "chdir",
-    "clone",
-    "comparguments",
-    "compcall",
-    "compctl",
-    "compdescribe",
-    "compfiles",
-    "compgen",
-    "compgroups",
-    "complete",
-    "compquote",
-    "comptags",
-    "comptry",
-    "compvalues",
-    "declare",
-    "dirs",
-    "disable",
-    "disown",
-    "dosh",
-    "echotc",
-    "echoti",
-    "help",
-    "history",
-    "hist",
-    "let",
-    "local",
-    "login",
-    "logout",
-    "map",
-    "mapfile",
-    "popd",
-    "print",
-    "pushd",
-    "readarray",
-    "repeat",
-    "savehistory",
-    "source",
-    "shopt",
-    "stop",
-    "suspend",
-    "typeset",
-    "whence"
-)
-)
-'''
 #alias
 NDef("alias_command", Or(
     And(
@@ -405,8 +353,7 @@ NDef("alias_command", Or(
          NRef("WHITESPACE"),
         "=",
          NRef("WHITESPACE"),
-        NRef("s"),
-         NRef("WHITESPACE"),
+        NRef("s")
     ),
     And(
         "alias",
@@ -415,8 +362,7 @@ NDef("alias_command", Or(
          NRef("WHITESPACE"),
         "=",
          NRef("WHITESPACE"),
-        NRef("varname"),
-         NRef("WHITESPACE"),
+        NRef("varname")
     ),
     And(
         "alias",
@@ -425,8 +371,7 @@ NDef("alias_command", Or(
          NRef("WHITESPACE"),
         "=",
          NRef("WHITESPACE"),
-        NRef("command"),
-         NRef("WHITESPACE"),
+        NRef("command")
     ),
     And(
         "alias",
@@ -439,8 +384,7 @@ NDef("alias_command", Or(
             NRef("single_quote"),
             NRef("command"),
             NRef("single_quote")
-        ),
-         NRef("WHITESPACE"),
+        )
     ),
     And(
         "alias",
@@ -453,8 +397,7 @@ NDef("alias_command", Or(
             NRef("double_quote"),
             NRef("command"),
             NRef("double_quote")
-        ),
-         NRef("WHITESPACE"),
+        )
     ),
     And(
         "alias",
@@ -472,8 +415,7 @@ NDef("alias_command", Or(
             NRef("command"),
              NRef("WHITESPACE"),
             NRef("double_quote")
-        ),
-         NRef("WHITESPACE"),
+        )
     ),
     And(
         "alias",
@@ -491,8 +433,7 @@ NDef("alias_command", Or(
             NRef("command"),
              NRef("WHITESPACE"),
             NRef("single_quote")
-        ),
-         NRef("WHITESPACE"),
+        )
     )
 )
 )
@@ -547,8 +488,7 @@ NDef("cd_command", Or(
         Or(
             NRef("possible_directory_names"),
             NRef("posix_directories")
-        ),
-         NRef("WHITESPACE"),
+        )
     )
     )
      )
@@ -576,8 +516,7 @@ NDef("command_command", And(
             NRef("s"),
             NRef("built-in"),
             NRef("command")
-        ),
-     NRef("WHITESPACE"),
+        )
     )
 )
 #false
@@ -903,7 +842,7 @@ word = NDef("WORD",
                     NRef("~orVariable")
                 ),
                 sep="",
-                max=6
+                max=15
             )
 )
 NDef("ASSIGNMENT_WORD",
@@ -911,16 +850,12 @@ NDef("ASSIGNMENT_WORD",
         (And(
         #should there be whitespace in assignment?
              NRef("NAME"),
-            NRef("WHITESPACE"),
-             "=",
-             NRef("WHITESPACE"),
+             " = ",
              NRef("WORD")
          ), 0.6),
          (And(
              NRef("globalvar"),
-              NRef("WHITESPACE"),
              "=",
-              NRef("WHITESPACE"),
              NRef("WORD")
          ), 0.4))
      )
@@ -942,9 +877,7 @@ The following are the operators (see XBD Operator)
 NDef("AND_IF",
      And(
          NRef("WHITESPACE"),
-         "&&",
-         NRef("WHITESPACE")
-    )
+         "&&")
 )
 NDef("OR_IF",
      And(
@@ -993,46 +926,10 @@ NDef("LESSAND",
          ), 0.9)
      )
 )
-NDef("GREATAND",
-     Or(
-         ">&",
-         And(
-             NRef("WHITESPACE"),
-             '>&',
-             NRef("WHITESPACE")
-         )
-     )
-)
-NDef("LESSGREAT",
-     Or(
-         "<>",
-         And(
-             NRef("WHITESPACE"),
-             '<>',
-             NRef("WHITESPACE")
-         )
-     )
-)
-NDef("DLESSDASH",
-     Or(
-         "<<-",
-          And(
-              NRef("WHITESPACE"),
-              '<<-',
-              NRef("WHITESPACE")
-          )
-     )
-)
-NDef("CLOBBER",
-     Or(
-         ">|",
-         And(
-             NRef("WHITESPACE"),
-             '||',
-             NRef("WHITESPACE")
-         )
-     )
-)
+NDef("GREATAND",">&")
+NDef("LESSGREAT","<>")
+NDef("DLESSDASH", "<<-")
+NDef("CLOBBER", ">|")
 NDef("WHITESPACE",
     WeightedOr(
         (NRef("NEWLINE"), 0.02),
@@ -1078,43 +975,48 @@ NDef("Bang", And(NRef("WHITESPACE"),"!", NRef("WHITESPACE")))
 %start program
 %%
 program          : linebreak complete_commands linebreak
-                 | linebreak
-                 ;
+                 | linebreak;
 complete_commands: complete_commands newline_list complete_command
-                 |                                complete_command
-                 ;
+                 |                                complete_command;
 complete_command : list separator_op
-                 | list
-                 ;
+                 | list;
 '''
 Def("program",
-    Or(
-        And(
+    WeightedOr(
+        (And(
             NRef("linebreak"),
             NRef("complete_commands"),
-            NRef("linebreak"),
             NRef("linebreak")
-        )
+        ), 0.98),
+            (NRef("linebreak"), 0.02)
     ),
-    cat="program")
-# avoid left recursion
-#NDef("complete_commands",
-#     Or(And(NRef("complete_commands"), NRef("newline_list"), NRef("complete_command")),
-#        NRef("complete_command")))
+    cat="start")
 NDef("complete_commands",
-     And(
-         Join(
+    Or(
+        NRef("complete_command"),
+        And(
              And(
-                 NRef("complete_command"),
-                 NRef("newline_list")
-             ),
-             sep=""),
-         NRef("complete_command")
+                 NRef("complete_commands"),
+                 NRef("newline_list"),
+                 NRef("complete_command")
+             )
          )
     )
+)
 NDef("complete_command",
-     Or(And(NRef("list"), NRef("separator_op")),
-        NRef("list")))
+     WeightedOr(
+        (NRef("list"), 0.2),
+        (And(
+            NRef("list"), " ",
+            NRef("separator_op"), " ",
+            NRef("list")
+            ), 0.4),
+        (And(
+            NRef("command"),
+            NRef("separator_op")
+            ) , 0.4)
+        )
+)
 '''
 list             : list separator_op and_or
                  |                   and_or
@@ -1124,7 +1026,14 @@ and_or           :                         pipeline
                  | and_or OR_IF  linebreak pipeline
                  ;
 '''
-NDef("list", Or(And(NRef("list"), NRef("separator_op"), NRef("and_or")), NRef("and_or")))
+NDef("list", Or(
+                And(
+                    NRef("list"),
+                    NRef("separator_op"),
+                    NRef("and_or")),
+                NRef("and_or"),
+                NRef("command")
+                ))
 NDef("and_or", Or(NRef("pipeline"),
                 And(NRef("and_or"), NRef("AND_IF"), NRef("linebreak"), NRef("pipeline")),
                 And(NRef("and_or"), NRef("OR_IF"), NRef("linebreak"), NRef("pipeline"))
@@ -1160,7 +1069,7 @@ compound_command : brace_group
                  | until_clause
                  ;
 '''
-command = NDef("command",   Or(
+NDef("command",   Or(
     NRef("built-in"),
     NRef("special-built-in"),
     NRef("simple_command"),
@@ -1189,9 +1098,17 @@ NDef("subshell", And('(', NRef("compound_list"), ")"))
 NDef("compound_list", Or(
     And(NRef("linebreak"), NRef("term")),
     And(NRef("linebreak"), NRef("term"), NRef("separator"))))
-NDef("term", Or(NRef("true_command"), NRef("false_command"),
-    And(NRef("term"), NRef("separator"), NRef("and_or")),
-        NRef("and_or")))
+NDef("term",
+    Or(
+        #NRef("true_command"),
+        #NRef("false_command"),
+        NRef("and_or"),
+        And(
+            NRef("term"),
+            NRef("separator"),
+            NRef("and_or")
+        )
+    ))
 '''
 for_clause       : For name                                      do_group
                  | For name                       sequential_sep do_group
@@ -1211,9 +1128,15 @@ NDef("for_clause", Or(
     And(NRef("For")," ", NRef("NAME"),NRef("sequential_sep")," ", NRef("do_group")),
     And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("sequential_sep")," ", NRef("do_group")),
     And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("wordlist"),NRef("sequential_sep")," ", NRef("do_group"))))
-NDef("wordlist", Or(
-    And(NRef("wordlist"), NRef("WORD")),
-    NRef("WORD")))
+NDef("wordlist", #WeightedOr(
+                    NRef("WORD"))
+                    #,
+                    #(And(
+                        #causes error:
+                        #NRef("wordlist"),
+                    #    NRef("WORD")
+                    #), 0.03),
+        #))
 '''
 case_clause      : Case WORD linebreak in linebreak case_list    Esac
                  | Case WORD linebreak in linebreak case_list_ns Esac
@@ -1380,7 +1303,10 @@ NDef("cmd_word", NRef("WORD"))
 #            And(NRef("cmd_prefix"),NRef("io_redirect")),
 #            NRef("ASSIGNMENT_WORD")),
 #            And(NRef("cmd_prefix"), NRef("ASSIGNMENT_WORD")))
-NDef("cmd_prefix", Join(Or(NRef("io_redirect"), NRef("ASSIGNMENT_WORD")), sep=" "))
+NDef("cmd_prefix", Or(
+                    NRef("io_redirect"),
+                    NRef("ASSIGNMENT_WORD")),
+                    )
 #NDef("cmd_suffix", Or(NRef("io_redirect"),
 #                      And(NRef("cmd_suffix"), NRef("io_redirect")),
 #                      NRef("WORD"),
@@ -1405,10 +1331,19 @@ NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
 NDef("here_end", NRef("WORD"))
-NDef("newline_list", Or(NRef("NEWLINE"),
-                    And(NRef("newline_list"), NRef("NEWLINE"))))
-NDef("linebreak",  Or(NRef("newline_list"), ""))
+#deleting since recursion doesn't work
+#NDef("nl", NRef("newline_list"))
+NDef("newline_list", #WeightedOr(
+                    #(And(
+                    #    NRef("nl"),
+                    #    NRef("NEWLINE")
+                    #    ), 0.05),
+                    NRef("NEWLINE") #, 0.95)
+                    )
+NDef("linebreak",  Or(
+            NRef("newline_list"),
+             ""))
 #is this what empty means?
-NDef("separator_op", Or('&',';'))
+NDef("separator_op", Or(' &',';'))
 NDef("separator", Or(And(NRef("separator_op"), NRef("linebreak")), NRef("newline_list")))
 NDef("sequential_sep", Or(';',NRef("linebreak"),NRef("newline_list")))
