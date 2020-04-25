@@ -9,12 +9,15 @@ class NRef(Ref):
 class NDef(Def):
     cat = "word"
 '''
-charset_nonspecial = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-charset_nonspecial_rest="-_+.,/!"
+charset_alpha="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+charset_digits="1234567890"
+charset_alphanum="abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+underscore="_"
+charset_alphanum_rest="-_+.,/!"
 charset_not_slash="~!@#$%^&*()_+~"
-NDef("s",  String(charset = charset_nonspecial, min=1, max=25))
+NDef("s",  String(charset = charset_alphanum, min=1, max=25))
     #, 0.8),
-    #String(charset=charset_nonspecial_rest, min=1, max=10),
+    #String(charset=charset_alphanum_rest, min=1, max=10),
      #0.1),
     #NRef("parens"), #0.9),
     #NRef("tilde") #, 0.1)
@@ -78,15 +81,13 @@ NDef("varname", And(" ",
      Or( NRef("globalvar"),
      And(String(charset=String.charset_alpha+b"_", min=1, max=1),
          String(charset=String.charset_alphanum+b"_", min=1, max=15)
-     )), " "))
-NDef("NAME", WeightedOr(
-    (NRef("varname"), 0.9),
-    (Or("@", "*", "#", "?", "-", "$", "!"), 0.1)))
+     ))))
+NDef("NAME", String(charset=String.charset_alpha+String.charset_alphanum, min=1, max=20))
 #these parens can have parens inside themselves:
 NDef("recursableparens",Or(
     And("${ ", NRef("NAME"), " }"),
     And("${# ", NRef("NAME"), " }"),
-    And("${ ", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), " }"))),)
+    And("${ ", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), " }"))))
 NDef("parens",Or(
     And("$ ", NRef("NAME")," ", NRef("recursableparens"))),
     And("$( ", NRef("NAME") , " )"),
@@ -97,7 +98,6 @@ NDef("~orVariable",Or(
     NRef("parens")
 )
 )
-
 '''
 /* -------------------------------------------------------
    The grammar symbols
@@ -106,17 +106,9 @@ NDef("~orVariable",Or(
 %token  ASSIGNMENT_WORD
 %token  NAME
 %token  NEWLINE //what are these?
-%token  IO_NUMBER'''
-NDef("WORD",
-            Join(
-                Or(
-                    NRef("s"),
-                    NRef("~orVariable")
-                ),
-                sep="",
-                max=15
-            )
-)
+%token  IO_NUMBER
+'''
+NDef("WORD", NRef("s"))
 NDef("ASSIGNMENT_WORD",
         And(
              Or(
@@ -124,7 +116,7 @@ NDef("ASSIGNMENT_WORD",
                 NRef("globalvar"),
                 NRef("WORD")
             ),
-             "=",
+             " = ",
              Or(
                 NRef("recursableparens"),
                 NRef("parens"),
@@ -152,13 +144,13 @@ The following are the operators (see XBD Operator)
 NDef("AND_IF"," && ")
 NDef("OR_IF", " || ")
 NDef("DSEMI", " ;; ")
-NDef("DLESS", " << ")
-NDef("DGREAT"," >> ")
-NDef("LESSAND", " <& ")
-NDef("GREATAND",">&")
-NDef("LESSGREAT","<>")
-NDef("DLESSDASH", "<<-")
-NDef("CLOBBER", ">|")
+NDef("DLESS", "<< ")
+NDef("DGREAT",">> ")
+NDef("LESSAND", "<& ")
+NDef("GREATAND",">& ")
+NDef("LESSGREAT","<> ")
+NDef("DLESSDASH", "<<- ")
+NDef("CLOBBER", ">| ")
 '''
 /* The following are the reserved words. */
 %token  If    Then    Else    Elif    Fi    Do    Done
@@ -169,8 +161,8 @@ These are reserved words, not operator tokens, and are
    recognized when reserved words are recognized.
 %token  Lbrace    Rbrace    Bang
        '{'       '}'       '!'
-%token  In
-/*      'in'   */'''
+%token  In 'in'
+'''
 NDef("If", " if ")
 NDef("Then", " then ")
 NDef("Else", " else ")
@@ -367,9 +359,9 @@ case_list        : case_list case_item
                  |           case_item
 '''
 
-NDef("case_clause", Or(And(NRef("Case")," ",NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("WORD"), NRef("linebreak"), "in", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("WORD"),NRef("linebreak"),"in",NRef("linebreak"), NRef("Esac"))))
+NDef("case_clause", Or(And(NRef("Case")," ",NRef("WORD"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
+    And(NRef("Case"), " ", NRef("WORD"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
+    And(NRef("Case"), " ", NRef("WORD"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
 
 NDef("case_list_ns", Or(
     And(NRef("case_list"), " ", NRef("case_item_ns")),
@@ -431,7 +423,7 @@ NDef("else_part", Or(
     And(NRef("Else"),NRef("compound_list"))))
 NDef("while_clause",And(NRef("While"),NRef("compound_list"),NRef("do_group")))
 NDef("until_clause",And(NRef("Until"),NRef("compound_list"),NRef("do_group")))
-NDef("function_definition", And(NRef("fname"), "(", ")",NRef("linebreak"),NRef("function_body")))
+NDef("function_definition", And(NRef("fname"), "()",NRef("linebreak"),NRef("function_body")))
 '''
 function_body    : compound_command                /* Apply rule 9 */
                  | compound_command redirect_list"
@@ -548,7 +540,7 @@ NDef("filename",  NRef("WORD")) #does WORD follow guidelines for file name?
 NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
-NDef("here_end", NRef("WORD"))
+NDef("here_end", "eof\n", NRef("WORD"), "eof\n")
 #deleting since recursion doesn't work
 #NDef("nl", NRef("newline_list"))
 NDef("newline_list", #WeightedOr(

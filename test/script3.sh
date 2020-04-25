@@ -1,70 +1,24 @@
 
- !   times 
-
- times  ;  times 
-pwd  &
-false ; false
- :
-
-
-pwd -L -P  ;  :; !  false
+false; !   :
 
 true &
- case  iThpRt19SOVin esac <<-Teo87IUyH3nBB2Fx &
+udp7E3UeTK() case  Mchm_xnp3dD7nKnuP2zNK_Pr in  esac ;
 
-
- :
- :  &  :
- : ; false
-<<-lo3DcBOZRJh2I9MoFEvHhBxid9ERxkZve9t0mypV3acdJEwOqKmMAwh;
-
-
- times  ;  :
-
-
- times  &
-pwd -L -P  &
-
-
- case  0HsIwctOgCnSpeJtPin esac ;
-
-
- : &
-true
- :
- !   :  &  times 
-
-false  & true
- times 
- :  & pwd 
--() case  k6ARgzvin esac  &
-
-
- :
- times ;
- :
-
-false;
-false
-
- times  &
-false  &  :
+true ;  !  pwd -P
+ times  & !  true ; pwd -L; !   :
+ case  m3LS8HxUUuEqWQ in  esac ;
  :;
- !  false  &  times 
+false
+pwd ;
+ case  f_bmg4B37Qva9eWOxiqpLhcM in  esac << eof
+wu3aIIoGZQPBLjOIOVDlcReof
+;
+
+pwd -L & !  pwd -L ; pwd -L; !  pwd -P
 
 
- times  &
- : &
-pwd -L &
-0<<-SZg0xLlPMUq4eCRts3vPoIigO6LK3z &
-true &
+ times  & !   times  ;  !   times 
+true  & true
+9cWrbXu3WacsRRuduF() case  T in  esac ;
+ :;
  times 
- !  true  &  !  pwd -P -L 
-
- times ;
-false ; false
- times  & !   :  & true & !  pwd -L -P 
- times   & true & !  false
-
-5<<-dsMZYtDF0oov9hNBGcHCKCo8beR6KicuAJKx;
-

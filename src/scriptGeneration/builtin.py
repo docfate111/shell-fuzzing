@@ -404,7 +404,7 @@ NDef("posix_directories", Or(
     )
 )
 NDef("possible_directory_names", And(
-    String(charset = charset_nonspecial, min=1, max=20),
+    String(charset = charset_alphanum, min=1, max=20),
     String(charset = charset_not_slash, min=1, max=7)
     )
 )

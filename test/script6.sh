@@ -1,57 +1,30 @@
-
- : & !  false  &  !  false
-
-PATH=truebZ4QF4JnUKdcQo8qKGSEJI &
- !   : ;  !  false
+pwd -L -P ;
 
 
-false &
-pwd  &
- : ; true
- times  & !  false  &  !  pwd -L
+ !   :  & pwd -P -L  & !   times 
 
-false ;  !   :
+true &
+ times   & pwd 
+ times 
+ : & !  pwd -P
 
-false &
-true  & true
- case  Qlpfl6RvfVYtyOGfwgQ0TMVin esac ;
-$() case  lnJyjaEnJtin esac  &
 
- : ;  times 
+ !  pwd -L ;  : & !   :
+
+ case  a4blw3YtY9vi0b in  esac 1<< eof
+M_oH8oaq7Iq8dkglJ6jeof
+;
+
+
  times ;
- :; !  pwd -P  &  : & !   times 
-
  times  ; false
 
 
- NLSPATH () case  HUXifMcnNHD1sqRvki7m9x2Oin esac ;
-
-false ;  :
- !  pwd -L -P  ;  times 
-
-pwd -L -P   &  :
-true  &  times 
- ENV () case  fcwL207din esac ;
-
- PATH () case  H7sSpKj3tKrFin esac  &
-
- PS2 () case  pdZg6gK7EfnlnoY3in esac  &
+ : ;  !  false
 
 
-false  & pwd -P
- :
-pwd -L &
- case  N1VZDQnVcymByXbzdhuin esac 1 << Zd81Rm4 &
-
-false &
-false;
- times  &
-
- :  &  times 
- :; !   : ;  : & !  pwd -P -L 
-
- :;
- :
- times  ; pwd -P -L 
- :;
+pwd 
+ : &
+true
+Tl3IUmjkP() case  MRY in  esac ;
 

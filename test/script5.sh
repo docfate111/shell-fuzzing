@@ -1,62 +1,41 @@
-pwd -P -L 
- case  VDSxEBSX0ekka8t79heUw5R8in esac >YMt37GtdMFhLehC;
-
-
- :
  times   & false
- : ; true & !  pwd 
+LC_COLLATE = truekOjDyV2nJc5laXUOqy4xrr5zotzwMEIjVXema1WHTg;
 
-true & !  pwd -P -L 
 
+ times   &  !   times 
+
+true  &  times 
+ times  ; pwd -P
+ case  wYwBlRAijhspTtaOCL41AVBd in  esac <<- eof
+TznEoHMnfXae7sf2hmIcHAeof
+ &
+
+
+ case  z8JFkDx8A in  esac 4<<- eof
+bSX9PWh8dF6eof
+ &
+
+
+pwd  &
+GvnEeGErNBtBLE() case  qraFyNmQhct in  esac  &
+
+ times   &  :
  times  ;  times 
- HOME () case  iYain esac  &
+ESCcdV5OzqyWTJXv() case  9JZ6zxkuh in  esac ;
 
-
- !  pwd -P -L 
-
- case  r3in esac 1<<-aEzQfbMdyNz &
-false;
-false & !   :  & pwd -L -P 
-
- times 
- : &
-
-pwd -L
- :  & pwd -P
- case  EpT4460XJZ03ZfWM80in esac ;
-
- times  ; pwd 
-false &
-true
- LANG () case  rDin esac ;
-false
-true ; false
 true;
-pwd ; !  false  & true
-pwd -L &
- times   &  times 
- times   &  times 
- !  false
-
-
- times  &
-
-true
- :
  times 
+szYu5GxIWu0NHFB() case  7nRKaAV97 in  esac ;
 
+false  & true
+ times   &  :
+false &
+ :  &  times 
 
- !   : ;  times 
+ case  e in  esac 1<<- eof
+x7ekCwZe67MTeof
+;
 
- :; !   times   &  : & !  false
- case  oQhNkjTi070SfofPT9in esac  &
- !  false
+false &
+ :;
 
-
- times 
-pwd -P  & false
- :
- !   times  ;  !   :
-
-
- case  0J4gSFBmin esac  &
