@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common && \
+    apt-get install -y git xz-utils nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
 #1. Write a docker that sets up
 #   a. random generation script
@@ -32,7 +32,10 @@ RUN git clone https://github.com/grml/heirloom-sh && \
 WORKDIR /home/tests
 RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
     mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5 && \
-    mv smoosh-fuzz/src/oilshell/* /usr/local/bin
+    mv smoosh-fuzz/src/oilshell/* /usr/local/bin/
+    #tar -x --xz < smoosh-fuzz/src/oil-0.8.pre4.tar.xz && \
+    #cd smoosh-fuzz/src/oil-0.8.pre4.tar.xz && \
+    # ./configure && make && ./install
 #    - osh isnt working
 #RUN git clone https://github.com/oilshell/oil.git && \
 #    git submodule update
