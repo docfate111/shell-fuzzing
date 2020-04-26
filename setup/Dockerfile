@@ -39,6 +39,7 @@ RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
     cd oil-0.8.pre4 && \
      ./configure && make && ./install
 WORKDIR /home/tests
+RUN cd smoosh-fuzz && rm oil-0.8.pre4.tar.xz
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
