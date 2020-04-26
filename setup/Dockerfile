@@ -1,16 +1,14 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git nodejs npm python python-pip python-dev build-essential libreadline-dev software-properties-common && \
+    apt-get install -y git nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
 #1. Write a docker that sets up
 #   a. random generation script
     mkdir -p /home/tests && \
     npm install -g npm && \
       npm init --yes && \
-    npm install command-exists colors shelljs.exec && \
-    apt-get update -y && \
-    apt-get upgrade -y
+    npm install command-exists colors shelljs.exec
 WORKDIR /home/tests
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
