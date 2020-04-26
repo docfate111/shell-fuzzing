@@ -32,7 +32,7 @@ function main(){
   var commands=runScripts(installed, 15);
   commands.map(function(command){
     console.log(command.blue);
-    parse(exec(command, {silent: true})));
+    parse(exec(command, {silent: true}));
   });
 }
 main();
