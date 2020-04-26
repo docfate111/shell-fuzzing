@@ -31,10 +31,8 @@ RUN git clone https://github.com/grml/heirloom-sh && \
 #RUN mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
 WORKDIR /home/tests
 RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
-    mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5
-WORKDIR /home/tests
-RUN cd smoosh-fuzz/src/oil-0.7.0  && \
-    ./configure && make && ./install
+    mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5 && \
+    mv smoosh-fuzz/src/oilshell/* /usr/local/bin
 #    - osh isnt working
 #RUN git clone https://github.com/oilshell/oil.git && \
 #    git submodule update
