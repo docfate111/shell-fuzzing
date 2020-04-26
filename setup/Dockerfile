@@ -25,16 +25,18 @@ RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
 #      - bash (3.x, 4.x, and 5.x)
 WORKDIR /home/tests
 #      - heirloom SH
-RUN git clone https://github.com/grml/heirloom-sh && \
+RUN cd smoosh-fuzz/src && \
+    git clone https://github.com/grml/heirloom-sh && \
     cd heirloom-sh/ && \
-    make && mv /home/tests/heirloom-sh/sh /usr/local/bin/heirloom-sh
-#can't do since there are errors in every bash3 version: 
+    make && mv sh /usr/local/bin/heirloom-sh
+#can't do since there are errors in every bash3 version:
 #RUN mv /home/smoosh-fuzz/tests/src/bash-3.0.16/bash /usr/local/bin/bash3
 WORKDIR /home/tests
 RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
     mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5 && \
-    tar -x --xz < smoosh-fuzz/src/oil-0.8.pre4.tar.xz && \
-    cd smoosh-fuzz/src/oil-0.8.pre4 && \
+    cd smoosh-fuzz/src/ && \
+    tar -x --xz < oil-0.8.pre4.tar.xz && \
+    cd oil-0.8.pre4 && \
      ./configure && make && ./install
 WORKDIR /home/tests
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
