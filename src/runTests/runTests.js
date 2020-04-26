@@ -30,6 +30,9 @@ function main(){
   const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh'];
   shells.map(x => checkShell(x));
   var commands=runScripts(installed, 15);
-  commands.map(command => parse(exec(command, {silent: true})));
+  commands.map(function(command){
+    console.log(command.blue);
+    parse(exec(command, {silent: true})));
+  });
 }
 main();

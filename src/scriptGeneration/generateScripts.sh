@@ -3,7 +3,7 @@ if [ "$#" -ne 1 ]; then
     echo 'Usage: '$0' [number of scripts to generate]'
     exit 1
 fi
-python3-pip install gramfuzz
+pip3 install gramfuzz
 #python3-pip install gramfuzz
 mkdir -p /home/tests/testscripts
 #installs gramfuzz, makes directory to hold the test scripts,
