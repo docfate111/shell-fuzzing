@@ -1,0 +1,5 @@
+// Python-2.7.13/Modules/gcmodule.c
+
+static PyMethodDef GcMethods[] = {
+  {0},
+};

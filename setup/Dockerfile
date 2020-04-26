@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common && \
+    apt-get install -y git nodejs npm python python-pip python-dev build-essential libreadline-dev software-properties-common && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
 #1. Write a docker that sets up
 #   a. random generation script
@@ -35,10 +35,7 @@ WORKDIR /home/tests
 RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
     mv smoosh-fuzz/src/bash5/bash5 /usr/local/bin/bash5
 WORKDIR /home/tests
-RUN git clone https://github.com/oilshell/oil.git && \
-    cd oil && \
-    tar -x --xz < oil-0.8.pre4.tar.xz && \
-    cd oil-0.8.pre4 && \
+RUN cd smoosh-fuzz/src/oil-0.7.0  && \
     ./configure && make && ./install
 #    - osh isnt working
 #RUN git clone https://github.com/oilshell/oil.git && \
