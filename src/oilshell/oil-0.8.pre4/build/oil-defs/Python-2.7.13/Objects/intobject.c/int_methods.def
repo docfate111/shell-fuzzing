@@ -1,0 +1,5 @@
+// Python-2.7.13/Objects/intobject.c
+
+static PyMethodDef int_methods[] = {
+  {0},
+};

@@ -1,0 +1,5 @@
+// Python-2.7.13/Modules/_weakref.c
+
+static PyMethodDef weakref_functions[] = {
+  {0},
+};

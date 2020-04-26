@@ -1,0 +1,5 @@
+// Python-2.7.13/Objects/rangeobject.c
+
+static PyMethodDef range_methods[] = {
+  {0},
+};
