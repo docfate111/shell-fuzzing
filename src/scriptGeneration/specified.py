@@ -78,7 +78,7 @@ NDef("quotedcharswithsingleordoublequotes", Or(
     )
 ))
 NDef("varname", And(" ",
-     Or( NRef("globalvar"),
+     Or( And("$", NRef("globalvar")),
      And(String(charset=String.charset_alpha+b"_", min=1, max=1),
          String(charset=String.charset_alphanum+b"_", min=1, max=15)
      ))))
@@ -113,7 +113,7 @@ NDef("ASSIGNMENT_WORD",
         And(
              Or(
                 NRef("NAME"),
-                NRef("globalvar"),
+                And("$", NRef("globalvar")),
                 NRef("WORD")
             ),
              " = ",
@@ -177,7 +177,7 @@ NDef("Until", " until ")
 NDef("For",  " for ")
 NDef("Lbrace", " { ")
 NDef("Rbrace", " } ")
-NDef("Bang", " ! ")
+NDef("Bang", " !")
 '''
 /* -------------------------------------------------------
    The Grammar
@@ -423,7 +423,7 @@ NDef("else_part", Or(
     And(NRef("Else"),NRef("compound_list"))))
 NDef("while_clause",And(NRef("While"),NRef("compound_list"),NRef("do_group")))
 NDef("until_clause",And(NRef("Until"),NRef("compound_list"),NRef("do_group")))
-NDef("function_definition", And(NRef("fname"), "()",NRef("linebreak"),NRef("function_body")))
+NDef("function_definition", And(NRef("fname"), "()",NRef("function_body")))
 '''
 function_body    : compound_command                /* Apply rule 9 */
                  | compound_command redirect_list"
@@ -540,7 +540,7 @@ NDef("filename",  NRef("WORD")) #does WORD follow guidelines for file name?
 NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
-NDef("here_end", "eof\n", NRef("WORD"), "eof\n")
+NDef("here_end", "EOF ", Or(NRef("complete_command"), NRef("WORD"), NRef("compound_command"), Or("complete_commands")), "EOF")
 #deleting since recursion doesn't work
 #NDef("nl", NRef("newline_list"))
 NDef("newline_list", #WeightedOr(
