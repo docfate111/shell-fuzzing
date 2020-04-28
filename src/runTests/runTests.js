@@ -22,7 +22,7 @@ function parse(obj){
   console.log(('Exit code: '+obj.code).green);
 }
 function main(){
-  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh'];
+  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash'];
   shells.map(x => checkShell(x));
   var commands=runScripts(installed, 15);
   commands.map(function(command){

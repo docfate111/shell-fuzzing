@@ -540,7 +540,7 @@ NDef("io_file", Or(
     And("<", NRef("filename")),
     And(NRef("LESSAND"), NRef("filename")),
     And('>', NRef("filename")),
-    And(NRef("GREATAND"), NRef("filename")),
+    And(NRef("GREATAND"), NRef("IO_NUMBER")),
     And(NRef("DGREAT"), NRef("filename")),
     And(NRef("LESSGREAT"), NRef("filename")),
     And(NRef("CLOBBER"), NRef("filename"))))
