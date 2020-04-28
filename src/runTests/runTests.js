@@ -22,9 +22,9 @@ function runScripts(shls, n){
   return output;
 }
 function parse(obj){
-  console.log(('Stdout: '+obj.stdout).toString().yellow);
-  console.log(('Stderr: '+obj.stderr).toString().green);
-  console.log(('Exit code: '+obj.code).toString().purple);
+  console.log(('Stdout: '+obj.stdout).green);
+  console.log(('Stderr: '+obj.stderr).green);
+  console.log(('Exit code: '+obj.code).green);
 }
 function main(){
   const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh'];

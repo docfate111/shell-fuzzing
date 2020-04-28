@@ -84,14 +84,22 @@ NDef("varname", And(" ",
      ))))
 NDef("NAME", String(charset=String.charset_alpha+String.charset_alphanum, min=1, max=20))
 #these parens can have parens inside themselves:
+NDef("possible_commands", Or(
+    NRef("ASSIGNMENT_WORD"),
+    NRef("special-built-in"),
+    NRef("built-in"),
+    NRef("simple_command"),
+    NRef("complete_command"),
+    NRef("complete_commands")
+))
 NDef("recursableparens",Or(
-    And("${ ", NRef("NAME"), " }"),
-    And("${# ", NRef("NAME"), " }"),
-    And("${ ", And(NRef("NAME"), NRef("FMTw"), NRef("WORD"), " }"))))
+    And("${ ", NRef("possible_commands"), " } "),
+    And("${# ", NRef("possible_commands"), " } "),
+    And("${ ", NRef("possible_commands"), " } "))))
 NDef("parens",Or(
-    And("$ ", NRef("NAME")," ", NRef("recursableparens"))),
-    And("$( ", NRef("NAME") , " )"),
-    And("$(( ", NRef("NAME")," ))"))
+    And("$ ", NRef("possible_commands")," ", NRef("recursableparens"))),
+    And("$( ", NRef("possible_commands") , " ) "),
+    And("$(( ", NRef("possible_commands")," )) "))
 #Rules for tilde:
 NDef("~orVariable",Or(
     NRef("tilde"),
@@ -540,7 +548,7 @@ NDef("filename",  NRef("WORD")) #does WORD follow guidelines for file name?
 NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
-NDef("here_end", "EOF ", Or(NRef("complete_command"), NRef("WORD"), NRef("compound_command"), Or("complete_commands")), "EOF")
+NDef("here_end", "EOF\n", Or(NRef("complete_command"), NRef("WORD"), NRef("compound_command"), Or("complete_commands")), "\nEOF")
 #deleting since recursion doesn't work
 #NDef("nl", NRef("newline_list"))
 NDef("newline_list", #WeightedOr(
