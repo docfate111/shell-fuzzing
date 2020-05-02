@@ -95,7 +95,7 @@ NDef("possible_commands", Or(
 NDef("recursableparens",Or(
     And("${ ", NRef("possible_commands"), " } "),
     And("${# ", NRef("possible_commands"), " } "),
-    And("${ ", NRef("possible_commands"), " } "))))
+    And("${ ", NRef("possible_commands"), " } ")))
 NDef("parens",Or(
     And("$ ", NRef("possible_commands")," ", NRef("recursableparens"))),
     And("$( ", NRef("possible_commands") , " ) "),
