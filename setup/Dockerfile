@@ -12,7 +12,7 @@ RUN apt-get update -y && \
 WORKDIR /home/tests
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
-    ./generateScripts.sh 15 && \
+    ./generateScripts.sh 5 && \
 #   b. A bunch of shells. At a minimum:
 #      - dash
 #      - yash

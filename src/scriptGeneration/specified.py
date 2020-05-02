@@ -136,9 +136,9 @@ NDef("ASSIGNMENT_WORD",
 )
 NDef("NEWLINE", "\n")
 NDef("TAB", "\t")
-NDef("IO_NUMBER", UInt(odds = [(0.45, [0, 2]),
+NDef("IO_NUMBER", And(UInt(odds = [(0.45, [0, 2]),
                                (0.45, [3, 9]),
-                               (0.1,  [10, 65535])]))
+                               (0.1,  [10, 65535])]), " "))
 '''
 The following are the operators (see XBD Operator)
    containing more than one character.
@@ -152,13 +152,13 @@ The following are the operators (see XBD Operator)
 NDef("AND_IF"," && ")
 NDef("OR_IF", " || ")
 NDef("DSEMI", " ;; ")
-NDef("DLESS", "<< ")
-NDef("DGREAT",">> ")
-NDef("LESSAND", "<& ")
-NDef("GREATAND",">& ")
-NDef("LESSGREAT","<> ")
-NDef("DLESSDASH", "<<- ")
-NDef("CLOBBER", ">| ")
+NDef("DLESS", " << ")
+NDef("DGREAT"," >> ")
+NDef("LESSAND", " <& ")
+NDef("GREATAND"," >& ")
+NDef("LESSGREAT"," <> ")
+NDef("DLESSDASH", " <<- ")
+NDef("CLOBBER", " >| ")
 '''
 /* The following are the reserved words. */
 %token  If    Then    Else    Elif    Fi    Do    Done
@@ -347,7 +347,7 @@ NDef("for_clause", Or(
     And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("sequential_sep")," ", NRef("do_group")),
     And(NRef("For")," ", NRef("NAME"),NRef("linebreak")," in ",NRef("wordlist"),NRef("sequential_sep")," ", NRef("do_group"))))
 NDef("wordlist", #WeightedOr(
-                    NRef("WORD"))
+                    NRef("possible_commands"))
                     #,
                     #(And(
                         #causes error:
@@ -366,10 +366,12 @@ case_list_ns     : case_list case_item_ns
 case_list        : case_list case_item
                  |           case_item
 '''
-
-NDef("case_clause", Or(And(NRef("Case")," ",NRef("WORD"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("WORD"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("WORD"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
+NDef("possible_case_cond", Or(
+                            NRef("possible_commands"),
+                            And("$", NRef("globalvar"))))
+NDef("case_clause", Or(And(NRef("Case"),NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
+    And(NRef("Case"), " ", NRef("possible_case_cond"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
+    And(NRef("Case"), " ", NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
 
 NDef("case_list_ns", Or(
     And(NRef("case_list"), " ", NRef("case_item_ns")),

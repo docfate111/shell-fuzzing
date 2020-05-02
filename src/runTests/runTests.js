@@ -24,7 +24,7 @@ function parse(obj){
 function main(){
   const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash'];
   shells.map(x => checkShell(x));
-  var commands=runScripts(installed, 15);
+  var commands=runScripts(installed, 5);
   commands.map(function(command){
     console.log(command.blue);
     parse(exec(command, {silent: true}));
