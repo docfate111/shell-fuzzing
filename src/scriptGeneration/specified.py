@@ -369,9 +369,9 @@ case_list        : case_list case_item
 NDef("possible_case_cond", Or(
                             NRef("possible_commands"),
                             And("$", NRef("globalvar"))))
-NDef("case_clause", Or(And(NRef("Case"),NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("possible_case_cond"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
-    And(NRef("Case"), " ", NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
+NDef("case_clause", Or(And(NRef("Case"), NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
+    And(NRef("Case"), NRef("possible_case_cond"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
+    And(NRef("Case"), NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
 
 NDef("case_list_ns", Or(
     And(NRef("case_list"), " ", NRef("case_item_ns")),
@@ -381,7 +381,7 @@ NDef("case_list_ns", Or(
 #NDef("case_list", Or(
 #    And(NRef("case_list"), NRef("case_item")),
 #    Or(NRef("case_item"))))
-NDef("case_list", Join(NRef("case_item"), sep=""))
+NDef("case_list", Or(NRef("case_item"), And(NRef("case_list"), NRef("case_item"))))
 
 '''
 case_item_ns     :     pattern ')' linebreak
@@ -516,8 +516,8 @@ sequential_sep   : ';' linebreak
                  | newline_list
                  ;
 '''
-NDef("cmd_name", NRef("WORD"))
-NDef("cmd_word", NRef("WORD"))
+NDef("cmd_name", NRef("possible_commands"))
+NDef("cmd_word", NRef("possible_commands"))
 #NDef("cmd_prefix", Or(
 #            NRef("io_redirect"),
 #            And(NRef("cmd_prefix"),NRef("io_redirect")),
