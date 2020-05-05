@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git xz-utils wget nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common && \
+    apt-get install -y git xz-utils wget nodejs npm python3 python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
     apt-add-repository -y ppa:fish-shell/release-3 && \
 #1. Write a docker that sets up
 #   a. random generation script
