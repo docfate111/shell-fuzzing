@@ -8,8 +8,8 @@ RUN apt-get update -y && \
     mkdir -p /home/tests && \
     npm install -g npm && \
       npm init --yes && \
-    npm install command-exists colors shelljs.exec
-RUN groupadd --gid 5000 newuser \
+    npm install command-exists colors shelljs.exec && \
+    groupadd --gid 5000 newuser \
     && useradd --home-dir /home/newuser --create-home --uid 5000 \
             --gid 5000 --shell /bin/sh --skel /dev/null newuser
 WORKDIR /home/tests
