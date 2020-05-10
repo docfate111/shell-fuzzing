@@ -9,10 +9,13 @@ RUN apt-get update -y && \
     npm install -g npm && \
       npm init --yes && \
     npm install command-exists colors shelljs.exec
+RUN groupadd --gid 5000 newuser \
+    && useradd --home-dir /home/newuser --create-home --uid 5000 \
+            --gid 5000 --shell /bin/sh --skel /dev/null newuser
 WORKDIR /home/tests
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
-    ./generateScripts.sh 5 && \
+    ./generateScripts.sh 50 && \
 #   b. A bunch of shells. At a minimum:
 #      - dash
 #      - yash
