@@ -44,11 +44,9 @@ RUN mv smoosh-fuzz/src/bash4/bash4 /usr/local/bin/bash4 && \
 WORKDIR /home/tests
 RUN cd smoosh-fuzz/src && rm oil-0.8.pre4.tar.xz
 WORKDIR /home/tests
-RUN wget http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz && \
-    tar -xf afl-latest.tgz && \
-    cd afl-2.52b && \
-    make && \
-    make install
+RUN git clone https://github.com/google/AFL.git && \
+    cd AFL && \
+    make 
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
