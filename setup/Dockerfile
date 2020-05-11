@@ -6,6 +6,20 @@ RUN apt-get update -y && \
 #1. Write a docker that sets up
 #   a. random generation script
     mkdir -p /home/tests && \
+    mkdir -p /home/results && \
+    mkdir -p /home/results/zsh && \
+    mkdir -p /home/results/yash && \
+    mkdir -p /home/results/bosh && \
+    mkdir -p /home/results/mksh && \
+    mkdir -p /home/results/fish && \
+    mkdir -p /home/results/bash5 && \
+    mkdir -p /home/results/bash3 && \
+    mkdir -p /home/results/bash4 && \
+    mkdir -p /home/results/ksh && \
+    mkdir -p /home/results/dash && \
+    mkdir -p /home/results/heirloomsh && \
+    mkdir -p /home/results/osh && \
+    chmod 777 /home/results/* && \
     npm install -g npm && \
       npm init --yes && \
     npm install command-exists colors shelljs.exec && \
@@ -46,7 +60,7 @@ RUN cd smoosh-fuzz/src && rm oil-0.8.pre4.tar.xz
 WORKDIR /home/tests
 RUN git clone https://github.com/google/AFL.git && \
     cd AFL && \
-    make 
+    make
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
