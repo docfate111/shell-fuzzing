@@ -1,7 +1,10 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git xz-utils wget gettext autoconf asciidoc ninja-build libncurses5-dev nodejs npm python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
+    EBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget gettext autoconf asciidoc ninja-build libncurses5-dev nodejs npm \
+    python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
     #1. Write a docker that sets up
 #   a. random generation script
     # mkdir -p /home/tests && \
@@ -40,7 +43,7 @@ WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
     ./generateScripts.sh 50
-#WORKDIR /home/smoosh-fuzz/shells
+WORKDIR /home/smoosh-fuzz/shells
 #   b. A bunch of shells. At a minimum:
 #      - dash
 RUN  apt source dash && \
