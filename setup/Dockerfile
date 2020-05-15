@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git xz-utils wget gettext autoconf ascii-doc ninja-build libncurses5-dev nodejs npm python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
+    apt-get install -y git xz-utils wget gettext autoconf asciidoc ninja-build libncurses5-dev nodejs npm python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
     #1. Write a docker that sets up
 #   a. random generation script
     # mkdir -p /home/tests && \
