@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    apt-get install -y git xz-utils wget curses libintl nodejs npm python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
+    apt-get install -y git xz-utils wget gettext autoconf ascii-doc ninja-build libncurses5-dev nodejs npm python3 make python3-pip build-essential libreadline-dev software-properties-common tmux nano && \
     #1. Write a docker that sets up
 #   a. random generation script
     # mkdir -p /home/tests && \
@@ -23,84 +23,71 @@ RUN apt-get update -y && \
     npm init --yes && \
     npm install command-exists colors shelljs.exec && \
     groupadd --gid 5000 newuser && \
-    useradd --home-dir /home/newuser --create-home --uid 5000 && \
+    useradd --home-dir /home/newuser --create-home --uid 5000 \
     --gid 5000 --shell /bin/sh --skel /dev/null newuser && \
     git clone https://github.com/google/AFL.git && \
     cd AFL && \
     make && \
-    CCX=$(afl-g++) ./configure && \
-    CC=$(which afl-gcc) ./configure &&  make clean all
-WORKDIR /home/
+    make install && \
+    make clean all && \
+    CC=/usr/local/bin/afl-g++ && \
+    CCX=/usr/local/bin/afl-gcc && \
+    #so we can use apt source
+    cp /etc/apt/sources.list /etc/apt/sources.list~ && \
+    sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list && \
+    apt update
+WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
     ./generateScripts.sh 50
-WORKDIR /home/smoosh-fuzz/shells
+#WORKDIR /home/smoosh-fuzz/shells
 #   b. A bunch of shells. At a minimum:
 #      - dash
-RUN  tar xvzf dash-0.5.10.2.tar.gz && \
+RUN  apt source dash && \
      cd dash-0.5.10.2 && \
-     ./configure --bindir=/bin --mandir=/usr/share/man && make && \
-     make install
-WORKDIR /home/smoosh-fuzz/shells
+     CC=$(which afl-gcc) ./configure && make && make install && cd .. && \
+#WORKDIR /home/smoosh-fuzz/shells
 #     - tcsh
-RUN  tar xvzf tcsh-6.22.02.tar.gz && \
-     cd tcsh-6.22.02 && \
-     CFLAGS="$CFLAGS -fcommon" && \
-     ./configure --prefix=/usr --bindir=/bin && \
-     make && \
-     sh ./tcsh.man2html && \
-     ./configure --bindir=/bin --mandir=/usr/share/man && make && \
-     make install && make install install.man && \
-     ln -v -sf tcsh   /bin/csh && \
-     ln -v -sf tcsh.1 /usr/share/man/man1/csh.1 && \
-     install -v -m755 -d          /usr/share/doc/tcsh-6.22.02/html && \
-     install -v -m644 tcsh.html/* /usr/share/doc/tcsh-6.22.02/html && \
-     install -v -m644 FAQ         /usr/share/doc/tcsh-6.22.02
-WORKDIR /home/smoosh-fuzz/shells
+    apt source tcsh && \
+    cd tcsh-6.21.00 && \
+    CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install && \
+#WORKDIR /home/smoosh-fuzz/shells
 #      - zsh
-RUN tar xvzf zsh-5.8.tar.xz && cd zsh-5.8 && \
-    ./configure --prefix=/usr \
-    --bindir=/bin         \
-    --sysconfdir=/etc/zsh \
-    --enable-etcdir=/etc/zsh && make && \
-    makeinfo  Doc/zsh.texi --plaintext -o Doc/zsh.txt && \
-    makeinfo  Doc/zsh.texi --html  -o Doc/html && \
-    makeinfo  Doc/zsh.texi --html --no-split --no-headers -o Doc/zsh.html && \
-    make install                              && \
-    make infodir=/usr/share/info install.info && \
-    install -v -m755 -d                 /usr/share/doc/zsh-5.8/html && \
-    install -v -m644 Doc/html/*         /usr/share/doc/zsh-5.8/html && \
-    install -v -m644 Doc/zsh.{html,txt} /usr/share/doc/zsh-5.8
-WORKDIR /home/smoosh-fuzz/shells
+    apt source zsh && cd zsh-5.8 && \
+    CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install && \
+#WORKDIR /home/smoosh-fuzz/shells
 #      - yash
-RUN tar xvzf yash-2.49.tar.gz && ./configure && make && sudo make install
-WORKDIR /home/smoosh-fuzz/shells
+    apt source yash && cd yash-2.49 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install && cd .. && \
+#WORKDIR /home/smoosh-fuzz/shells
 #      - ksh
-RUN git clone https://github.com/att/ast.git && cd ast && ./bin/package make
-WORKDIR /home/smoosh-fuzz/shells
+    apt source ksh && cd ksh-2020.0.0  && CC=$(which afl-gcc) ninja -C build install && cd .. && \
+#WORKDIR /home/smoosh-fuzz/shells
 #      - mksh
-RUN tar xvzf mksh-R59.tgz && cd mksh-R59 && /bin/sh ./Build.sh
+    apt source mksh && cd mksh-58 &&  CC=$(which afl-gcc) /bin/sh ./Build.sh && cp mksh /usr/local/bin/mksh \
+#WORKDIR /home/smoosh-fuzz/shells
+#      - bosh: afl gives error when running ./bosh
+    apt source bosh && cd bosh-0.6 CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install && cd .. && \
+#WORKDIR /home/smoosh-fuzz/shells
+#      - fish: error about fish being slow from afl-fuzz
+    apt source fish && cp -r fish-3.1.0 /usr/local/fish && cd /usr/local/fish && \
+    mkdir build; cd build && CC=$(which afl-gcc) CCX=$(which afl-g++) cmake .. && CC=$(which afl-gcc) CCX=$(which afl-g++) make && CC=$(which afl-gcc) CCX=$(which afl-g++) make install && \
+    #bash version 5
+    apt source bash && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
+    cp bash bash5 && cp bash5 /usr/local/bin/bash5
 WORKDIR /home/smoosh-fuzz/shells
-#      - bosh
-RUN tar -xf bosh.tar.bz2 && cp schily-2020-05-11 bosh && rm -rf schily-2020-05-11 && \
-    cd bosh && make
-WORKDIR /home/smoosh-fuzz/shells
-#      - fish
-RUN tar -xf fish-3.1.1.tar.gz && cd fish-3.1.1 && mkdir build; cd build && \
-    cmake .. && make && make install
-WORKDIR /home/smoosh-fuzz/shells
-#      - bash (3.x, 4.x, and 5.x) couldn't get a v3 without errors
-RUN cd bash-4.0 && ./configure && make && make install && cd .. && \
-    cd bash-5.0 && ./configure && make && make install
+#      - bash (3.x (MAC) and  4.x)
+RUN tar -xf bash-4.0.tar.gz && \
+    tar xf bash-3.2.57.tar.gz && \
+    cd bash-4.0 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure &&  CC=$(which afl-gcc) CCX=$(which afl-g++) make && CC=$(which afl-gcc) CCX=$(which afl-g++) make install && cd .. && \
+    cd bash-3.2.57 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && CC=$(which afl-gcc) CCX=$(which afl-g++) make install
 WORKDIR /home/smoosh-fuzz/shells
 #      - heirloom SH
 RUN git clone https://github.com/grml/heirloom-sh && \
     cd heirloom-sh/ && \
-    make && mv sh /usr/local/bin/heirloom-sh
-WORKDIR /home/smoosh-fuzz/shells
-RUN tar -x --xz < oil-0.8.pre4.tar.xz && \
+      CC=$(which afl-gcc) CCX=$(which afl-g++) make && mv sh /usr/local/bin/heirloom-sh && cd .. && \
+    tar -x --xz < oil-0.8.pre4.tar.xz && \
     cd oil-0.8.pre4 && \
-     ./configure && make && ./install
+    CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
