@@ -26,7 +26,7 @@ function main(){
     console.log('Usage: '+process.argv[0]+' '+process.argv[1]+' [ shell script ]');
     process.exit();
   }
-  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash'];
+  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash', 'tcsh'];
   shells.map(x => checkShell(x));
   var commands=runScripts(installed);
   commands.map(function(command){

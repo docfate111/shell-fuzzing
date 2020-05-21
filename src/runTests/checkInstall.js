@@ -14,7 +14,7 @@ function checkShell(sh){
 };
 
 function main(){
-  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash'];
+  const shells=['dash', 'yash', 'ksh', 'mksh', 'bosh', 'zsh', 'fish', 'bash3', 'bash4', 'bash5', 'heirloom-sh', 'osh', 'bash', 'tcsh'];
   shells.map(x => checkShell(x));
 }
 main();

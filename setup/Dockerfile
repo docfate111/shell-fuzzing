@@ -52,9 +52,9 @@ RUN  git clone https://salsa.debian.org/debian/dash.git dash && \
       cd dash && \
      CC=$(which afl-gcc) ./configure --without-tcsetpgrp  && make && make install && cd /home/smoosh-fuzz/shells && \
 #     - tcsh
-     # git clone https://salsa.debian.org/debian/tcsh.git && \
-     # cd tcsh && \
-     # CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure --without-tcsetpgrp  && make install &&  cd /home/smoosh-fuzz/shells && \
+     git clone https://salsa.debian.org/debian/tcsh.git && \
+     cd tcsh && \
+     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure --without-tcsetpgrp  && make install &&  cd /home/smoosh-fuzz/shells && \
 #      - zsh
      git clone https://salsa.debian.org/debian/zsh.git && cd zsh && \
      CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure --without-tcsetpgrp  && make install &&  cd /home/smoosh-fuzz/shells && \
@@ -64,12 +64,11 @@ RUN  git clone https://salsa.debian.org/debian/dash.git dash && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - ksh
 #    git clone https://salsa.debian.org/debian/ksh.git && cd ksh  && CC=$(which afl-gcc) ninja -C build install &&  cd /home/smoosh-fuzz/shells && \
-#WORKDIR /home/smoosh-fuzz/shells
 #      - mksh
-    #apt source mksh && cd mksh &&  CC=$(which afl-gcc) /bin/sh ./Build.sh && cp mksh /usr/local/bin/mksh cd /home/smoosh-fuzz/shells && \
+    git clone https://evolvis.org/anonscm/git/alioth/mksh.git -b master && cd mksh &&  CC=$(which afl-gcc) /bin/sh ./Build.sh && cp mksh /usr/local/bin/mksh && cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - bosh: afl gives error when running ./bosh
-    #apt source bosh && cd bosh CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && make install &&  cd /home/smoosh-fuzz/shells && \
+    git clone https://salsa.debian.org/carnil/bosh.git && cd bosh && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && make && make install &&  cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - fish: error about fish being slow from afl-fuzz
     git clone https://salsa.debian.org/debian/fish.git && cp -r fish /usr/local/fish && cd /usr/local/fish && \
@@ -83,9 +82,9 @@ WORKDIR /home/smoosh-fuzz/shells
 RUN tar -xf bash-4.0.tar.gz && \
     tar xf bash-3.2.57.tar.gz && \
     cd bash-4.0 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  &&  CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
-    CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells && \
+    CC=$(which afl-gcc) CCX=$(which afl-g++) make install && cp bash /usr/local/bin/bash4 && cd /home/smoosh-fuzz/shells && \
     cd bash-3.2.57 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
-    CC=$(which afl-gcc) CCX=$(which afl-g++) make install
+    CC=$(which afl-gcc) CCX=$(which afl-g++) make install && cp bash /usr/local/bin/bash3
 WORKDIR /home/smoosh-fuzz/shells
 #      - heirloom SH
 RUN git clone https://github.com/grml/heirloom-sh && \
