@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget libncurses5-dev nodejs npm \
-    python3 make python3-pip build-essential libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano && \
+    DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev nodejs npm \
+    python3 make python3-pip build-essential libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano bison flex && \
     #ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
     #dpkg-reconfigure --frontend noninteractive tzdata && \
     #1. Write a docker that sets up
@@ -48,43 +48,43 @@ RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
 WORKDIR /home/smoosh-fuzz/shells
 #   b. A bunch of shells. At a minimum:
 #      - dash
-RUN  apt source dash && \
-     cd dash-0.5.10.2 && \
-     CC=$(which afl-gcc) ./configure && make && make install && cd /home/smoosh-fuzz/shells && \
+RUN  git clone https://salsa.debian.org/debian/dash.git dash && \
+      cd dash && \
+     CC=$(which afl-gcc) ./configure --without-tcsetpgrp  && make && make install && cd /home/smoosh-fuzz/shells && \
 #     - tcsh
-     apt source tcsh && \
-     cd tcsh-6.21.00 && \
-     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install &&  cd /home/smoosh-fuzz/shells && \
+     # git clone https://salsa.debian.org/debian/tcsh.git && \
+     # cd tcsh && \
+     # CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure --without-tcsetpgrp  && make install &&  cd /home/smoosh-fuzz/shells && \
 #      - zsh
-     apt source zsh && cd zsh-5.8 && \
-     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install &&  cd /home/smoosh-fuzz/shells && \
+     git clone https://salsa.debian.org/debian/zsh.git && cd zsh && \
+     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure --without-tcsetpgrp  && make install &&  cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - yash
-    apt source yash && cd yash-2.49 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install && cd /home/smoosh-fuzz/shells && \
+    git clone https://salsa.debian.org/debian/yash.git && cd yash && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && make install && cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - ksh
-    apt source ksh && cd ksh-2020.0.0  && CC=$(which afl-gcc) ninja -C build install &&  cd /home/smoosh-fuzz/shells && \
+#    git clone https://salsa.debian.org/debian/ksh.git && cd ksh  && CC=$(which afl-gcc) ninja -C build install &&  cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - mksh
-    apt source mksh && cd mksh-58 &&  CC=$(which afl-gcc) /bin/sh ./Build.sh && cp mksh /usr/local/bin/mksh cd /home/smoosh-fuzz/shells && \
+    #apt source mksh && cd mksh &&  CC=$(which afl-gcc) /bin/sh ./Build.sh && cp mksh /usr/local/bin/mksh cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - bosh: afl gives error when running ./bosh
-    apt source bosh && cd bosh-0.6 CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make install &&  cd /home/smoosh-fuzz/shells && \
+    #apt source bosh && cd bosh CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && make install &&  cd /home/smoosh-fuzz/shells && \
 #WORKDIR /home/smoosh-fuzz/shells
 #      - fish: error about fish being slow from afl-fuzz
-    apt source fish && cp -r fish-3.1.0 /usr/local/fish && cd /usr/local/fish && \
+    git clone https://salsa.debian.org/debian/fish.git && cp -r fish /usr/local/fish && cd /usr/local/fish && \
     mkdir build; cd build && CC=$(which afl-gcc) CCX=$(which afl-g++) cmake .. && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
-    CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells && \
+    CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells
     #bash version 5
-    apt source bash && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
-    cp bash bash5 && cp bash5 /usr/local/bin/bash5
+    #git clone https://salsa.debian.org/debian/bash.git && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
+    #cp bash bash5 && cp bash5 /usr/local/bin/bash5
 WORKDIR /home/smoosh-fuzz/shells
 #      - bash (3.x (MAC) and  4.x)
 RUN tar -xf bash-4.0.tar.gz && \
     tar xf bash-3.2.57.tar.gz && \
-    cd bash-4.0 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure &&  CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
+    cd bash-4.0 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  &&  CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
     CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells && \
-    cd bash-3.2.57 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
+    cd bash-3.2.57 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
     CC=$(which afl-gcc) CCX=$(which afl-g++) make install
 WORKDIR /home/smoosh-fuzz/shells
 #      - heirloom SH
@@ -93,9 +93,10 @@ RUN git clone https://github.com/grml/heirloom-sh && \
       CC=$(which afl-gcc) CCX=$(which afl-g++) make && mv sh /usr/local/bin/heirloom-sh &&  cd /home/smoosh-fuzz/shells && \
     tar -x --xz < oil-0.8.pre4.tar.xz && \
     cd oil-0.8.pre4 && \
-    CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install
+    CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install \
+    && cd /home/smoosh-fuzz/shells/ && rm *gz *xz
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
-RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
+#RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
 #   b. Runs each shell on that script, recording STDOUT, STDERR, exit
