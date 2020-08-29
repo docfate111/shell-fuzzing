@@ -92,10 +92,12 @@ NDef("possible_commands", Or(
     NRef("complete_command"),
     NRef("complete_commands")
 ))
+# unspecified {}
+# in dash ; or \n must be before the last }
 NDef("recursableparens",Or(
-    And("${ ", NRef("possible_commands"), " } "),
-    And("${# ", NRef("possible_commands"), " } "),
-    And("${ ", NRef("possible_commands"), " } ")))
+    And("${ ", NRef("possible_commands"), Or("} ", ";}", "\n}")),
+    And("${# ", NRef("possible_commands"), Or("} ", ";}", "\n}")),
+    And("${ ", NRef("possible_commands"), Or("} ", ";}", "\n}"))))
 NDef("parens",Or(
     And("$ ", NRef("possible_commands")," ", NRef("recursableparens"))),
     And("$( ", NRef("possible_commands") , " ) "),
@@ -368,6 +370,8 @@ case_list        : case_list case_item
 '''
 NDef("possible_case_cond", Or(
                             NRef("possible_commands"),
+                            NRef("built-in"),
+                            NRef("special-built-in"),
                             And("$", NRef("globalvar"))))
 NDef("case_clause", Or(And(NRef("Case"), NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
     And(NRef("Case"), NRef("possible_case_cond"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
@@ -378,9 +382,9 @@ NDef("case_list_ns", Or(
     NRef("case_item_ns")))
 
 # avoid left recursion
-#NDef("case_list", Or(
-#    And(NRef("case_list"), NRef("case_item")),
-#    Or(NRef("case_item"))))
+NDef("case_list", Or(
+    And(NRef("case_list"), NRef("case_item")),
+    Or(NRef("case_item"))))
 NDef("case_list", Or(NRef("case_item"), And(NRef("case_list"), NRef("case_item"))))
 
 '''
@@ -550,7 +554,7 @@ NDef("filename",  NRef("WORD")) #does WORD follow guidelines for file name?
 NDef("io_here",  Or(
             And(NRef("DLESS"), NRef("here_end")), # TODO needs more! generate the contents of the heredoc (a bunch of words on lines) followed by the delimiter. delimiter may be quoted
             And(NRef("DLESSDASH"), NRef("here_end"))))
-NDef("here_end", "EOF\n", Or(NRef("complete_command"), NRef("WORD"), NRef("compound_command"), Or("complete_commands")), "\nEOF")
+NDef("here_end", And("EOF\n", NRef("possible_commands"), "\nEOF\n"))
 #deleting since recursion doesn't work
 #NDef("nl", NRef("newline_list"))
 NDef("newline_list", #WeightedOr(

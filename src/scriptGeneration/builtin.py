@@ -446,7 +446,9 @@ NDef("command_command", And(
         " ",
         Or(
             NRef("s"),
-            NRef("built-in"),
+            Or(
+                NRef("built-in"),
+                NRef("special-built-in")),
             NRef("command")
         )
     )
