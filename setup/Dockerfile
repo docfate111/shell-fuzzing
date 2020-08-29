@@ -94,6 +94,9 @@ RUN git clone https://github.com/grml/heirloom-sh && \
     cd oil-0.8.pre4 && \
     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install \
     && cd /home/smoosh-fuzz/shells/ && rm *gz *xz
+WORKDIR /home/smoosh-fuzz/shells
+RUN apt source posh && \ cd posh && \ CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure
+&& make && make install
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 #RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:

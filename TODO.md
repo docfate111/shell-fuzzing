@@ -1,7 +1,7 @@
 # Generating random programs
 
 - [X] Finish words
-  + [ ] Fixup HEREDOCS ???
+  + [X] Fixup HEREDOCS
 - [X] Statements
   + [X] Simple commands (assignments, commands, redirects)
   + [X] Process control (`|`, `&`, `(...)`)
@@ -12,6 +12,7 @@
 - [X] Bias towards well known variables (`ENV`, `PATH`, etc.)
 - [X] Bias towards well known shell builtins
 ?? Next steps:
+- [ ] [Use shellcheck](https://github.com/koalaman/shellcheck) to fix errors
 - [ ] Option to not generate calls to real programs (need to watch out for `eval` and `source`/`.`!)
 - [ ] Options to avoid weird behaviors
   + [ ] Implementation defined (e.g., checking pipe termination)
