@@ -95,13 +95,23 @@ RUN git clone https://github.com/grml/heirloom-sh && \
     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install \
     && cd /home/smoosh-fuzz/shells/ && rm *gz *xz
 WORKDIR /home/smoosh-fuzz/shells
-RUN apt source posh && \ cd posh && \ CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure
-&& make && make install
+# for some reason this gives an error:
+# RUN apt source posh && cd posh && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make && make install
+WORKDIR /home/smoosh-fuzz/shells
+RUN mkdir -p /home/tests/zshtests && cp zsh/Test/* /home/tests/zshtests && \
+    mkdir -p /home/tests/yashtests &&  cp yash/tests/* /home/tests/yashtests && \ 
+    mkdir -p /home/tests/tcshtests &&  cp tcsh/tests/* /home/tests/tcshtests && \ 
+    mkdir -p /home/tests/mkshtests && cp mksh/test.sh /home/tests/mkshtests && \
+    mkdir -p /home/tests/fishtests && cp fish/tests/* /home/tests/fishtests && \ 
+    mkdir -p /home/tests/bash4tests && cp bash-4.0/tests/* /home/tests/bash4tests && \ 
+    mkdir -p /home/tests/bash3tests && cp bash-3.2.57/tests/* /home/tests/bash3tests
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
-#RUN node /home/tests/smoosh-fuzz/src/runTests/checkInstall.js
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
 #   b. Runs each shell on that script, recording STDOUT, STDERR, exit
 #      status, and any changes to the filesystem.
 #   c. Outputs a summary comparing the behavior of each shell, grouping
 #      them into equivalence classes.
+# RUN node /home/tests/smoosh-fuzz/src/runTests/runTests.js > results
+# does a and b and saves the summary to results
+# with scripts in home/tests/testscripts/script

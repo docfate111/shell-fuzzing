@@ -368,11 +368,7 @@ case_list_ns     : case_list case_item_ns
 case_list        : case_list case_item
                  |           case_item
 '''
-NDef("possible_case_cond", Or(
-                            NRef("possible_commands"),
-                            NRef("built-in"),
-                            NRef("special-built-in"),
-                            And("$", NRef("globalvar"))))
+NDef("possible_case_cond",NRef("WORD"))
 NDef("case_clause", Or(And(NRef("Case"), NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"),NRef("case_list"), NRef("Esac")),
     And(NRef("Case"), NRef("possible_case_cond"), NRef("linebreak"), " in ", NRef("linebreak"), NRef("case_list_ns"), NRef("Esac")),
     And(NRef("Case"), NRef("possible_case_cond"),NRef("linebreak")," in ",NRef("linebreak"), NRef("Esac"))))
@@ -437,7 +433,11 @@ NDef("else_part", Or(
     And(NRef("Else"),NRef("compound_list"))))
 NDef("while_clause",And(NRef("While"),NRef("compound_list"),NRef("do_group")))
 NDef("until_clause",And(NRef("Until"),NRef("compound_list"),NRef("do_group")))
-NDef("function_definition", And(NRef("fname"), "()",NRef("function_body")))
+# technically () vs (){} isn't defined but most shells give an error for ()
+NDef("function_definition", Or(
+    And(NRef("fname"), "()",NRef("function_body")),
+    And(NRef("fname"), "(){ ",NRef("function_body"), " }")
+    ))
 '''
 function_body    : compound_command                /* Apply rule 9 */
                  | compound_command redirect_list"
