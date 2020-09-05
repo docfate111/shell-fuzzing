@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev nodejs npm \
-    python3 make python3-pip build-essential libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano bison flex && \
+    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano bison flex && \
     #ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
     #dpkg-reconfigure --frontend noninteractive tzdata && \
     #1. Write a docker that sets up
@@ -74,7 +74,7 @@ RUN  git clone https://salsa.debian.org/debian/dash.git dash && \
     git clone https://salsa.debian.org/debian/fish.git && cp -r fish /usr/local/fish && cd /usr/local/fish && \
     mkdir build; cd build && CC=$(which afl-gcc) CCX=$(which afl-g++) cmake .. && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
     CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells
-    #bash version 5
+    #bash version 5 errors getting bash 5
     #git clone https://salsa.debian.org/debian/bash.git && CC=$(which afl-gcc) CCX=$(which afl-g++) make && \
     #cp bash bash5 && cp bash5 /usr/local/bin/bash5
 WORKDIR /home/smoosh-fuzz/shells
@@ -96,15 +96,17 @@ RUN git clone https://github.com/grml/heirloom-sh && \
     && cd /home/smoosh-fuzz/shells/ && rm *gz *xz
 WORKDIR /home/smoosh-fuzz/shells
 # for some reason this gives an error:
+# maybe later posh shell could be tested
 # RUN apt source posh && cd posh && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make && make install
 WORKDIR /home/smoosh-fuzz/shells
-RUN mkdir -p /home/tests/zshtests && cp zsh/Test/* /home/tests/zshtests && \
-    mkdir -p /home/tests/yashtests &&  cp yash/tests/* /home/tests/yashtests && \ 
-    mkdir -p /home/tests/tcshtests &&  cp tcsh/tests/* /home/tests/tcshtests && \ 
-    mkdir -p /home/tests/mkshtests && cp mksh/test.sh /home/tests/mkshtests && \
-    mkdir -p /home/tests/fishtests && cp fish/tests/* /home/tests/fishtests && \ 
-    mkdir -p /home/tests/bash4tests && cp bash-4.0/tests/* /home/tests/bash4tests && \ 
-    mkdir -p /home/tests/bash3tests && cp bash-3.2.57/tests/* /home/tests/bash3tests
+RUN mkdir -p /home/tests/zshtests && cp -r zsh/Test/* /home/tests/zshtests && \
+    mkdir -p /home/tests/yashtests &&  cp -r yash/tests/* /home/tests/yashtests && \ 
+    mkdir -p /home/tests/tcshtests &&  cp -r tcsh/tests/* /home/tests/tcshtests && \ 
+    mkdir -p /home/tests/mkshtests && cp -r mksh/test.sh /home/tests/mkshtests && \
+    mkdir -p /home/tests/fishtests && cp -r fish/tests/* /home/tests/fishtests && \ 
+    mkdir -p /home/tests/bash4tests && cp -r bash-4.0/tests/* /home/tests/bash4tests && \ 
+    mkdir -p /home/tests/bash3tests && cp -r bash-3.2.57/tests/* /home/tests/bash3tests && \
+    touch ~/.zshrc
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
@@ -115,3 +117,4 @@ RUN mkdir -p /home/tests/zshtests && cp zsh/Test/* /home/tests/zshtests && \
 # RUN node /home/tests/smoosh-fuzz/src/runTests/runTests.js > results
 # does a and b and saves the summary to results
 # with scripts in home/tests/testscripts/script
+# node runsArgOnShells.js runs whatever argument is passed to it
