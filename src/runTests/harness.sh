@@ -10,10 +10,8 @@ flags(){
         ( zsh ) echo "--emulate sh";;
         ( * ) return 1;
     esac
-
     return 0
 }
-
 # if [ "$#" -ne 1 ]
 # then
 #     echo "Expected 1 argument, got $#: '$@'"
@@ -21,16 +19,16 @@ flags(){
 # fi
 
 # CMD="$1"
-
 SHELLS="dash yash ksh mksh bosh zsh fish bash3 bash4 bash5 heirloom-sh osh bash tcsh"
-declare -a arr=("dashresults" "yashresults" "element3")
+declare -a arr=("dashresults" "yashresults" "kshresults" "mkshresults" "boshresults" "zshresults" "fishresults" "bash3results" "bash4results" "bash5results" "heirloom-sh" "osh" "bashresults" "tcshresults")
+i = 0
 # calculate field width
 for SH in $SHELLS
 do
-   
+   echo $($SH ) > "${arr[$i]}"
+    ((i=i+1))
 done
 WIDTH=$((WIDTH+6))
-
 # for SH in $SHELLS
 # do
 #     flags=$(flags $SH)

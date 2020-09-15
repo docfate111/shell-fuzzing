@@ -556,14 +556,14 @@ NDef("io_here",  Or(
             And(NRef("DLESSDASH"), NRef("here_end"))))
 NDef("here_end", And("EOF\n", NRef("possible_commands"), "\nEOF\n"))
 #deleting since recursion doesn't work
-#NDef("nl", NRef("newline_list"))
-NDef("newline_list", #WeightedOr(
-                    #(And(
-                    #    NRef("nl"),
-                    #    NRef("NEWLINE")
-                    #    ), 0.05),
-                    NRef("NEWLINE") #, 0.95)
-                    )
+NDef("nl", NRef("newline_list"))
+NDef("newline_list", WeightedOr(
+                    (And(
+                        NRef("nl"),
+                        NRef("NEWLINE")
+                        ), 0.05),
+                    (NRef("NEWLINE") , 0.95)
+                    ))
 NDef("linebreak",  Or(
             NRef("newline_list"),
              ""))
