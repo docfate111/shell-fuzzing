@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
-    DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev nodejs npm \
+    DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
     python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano bison flex && \
     #ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
     #dpkg-reconfigure --frontend noninteractive tzdata && \
@@ -23,9 +23,7 @@ RUN apt-get update -y && \
     # mkdir -p /home/results/osh && \
   #  chmod 777 /home/results/* && \
   # asciidoc
-    npm install -g npm && \
-    npm init --yes && \
-    npm install command-exists colors shelljs.exec && \
+    pip3 install termcolor gramfuzz &&
     groupadd --gid 5000 newuser && \
     useradd --home-dir /home/newuser --create-home --uid 5000 \
     --gid 5000 --shell /bin/sh --skel /dev/null newuser && \
@@ -48,7 +46,7 @@ RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
 WORKDIR /home/smoosh-fuzz/shells
 #   b. A bunch of shells. At a minimum:
 #      - dash
-RUN  git clone https://salsa.debian.org/debian/dash.git dash && \
+RUN  git clone https://salsa.debian.org/debian/dash.git && \
       cd dash && \
      CC=$(which afl-gcc) ./configure --without-tcsetpgrp  && make && make install && cd /home/smoosh-fuzz/shells && \
 #     - tcsh
