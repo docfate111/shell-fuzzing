@@ -23,19 +23,25 @@ def which(program):
 checkShell = lambda program: "/bin" in which(program)
 
 
-def get_output(cmnd):
-    try:
-        output = subprocess.check_output(
-            cmnd,
-            stderr=subprocess.STDOUT,
-            shell=True,
-            timeout=3,
-            universal_newlines=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        print("Status : FAIL", exc.returncode, exc.output)
-    else:
-        print("Output: \n{}\n".format(output))
+def run(cmd):
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    stdout, stderr = proc.communicate()
+    return proc.returncode, stdout, stderr
+
+
+def runOnShells(shell_list, filename):
+    for shell in shell_list:
+        print(colored(shell, "yellow"))
+        print(colored("=" * 10, "yellow"))
+        output_info = run(["/bin/" + shell, filename])
+        print("Exit code:", output_info[0])
+        print("Stdout:", output_info[1].decode("utf-8"))
+        print("Stderr:", output_info[2].decode("utf-8"))
+        print(colored("=" * 10, "yellow"))
 
 
 if __name__ == "__main__":
@@ -59,3 +65,4 @@ if __name__ == "__main__":
         "tcsh",
     ]
     installedShells = list(filter(checkShell, shells))
+    runOnShells(installedShells, os.getcwd() + "/" + sys.argv[1])
