@@ -23,7 +23,7 @@ RUN apt-get update -y && \
     # mkdir -p /home/results/osh && \
   #  chmod 777 /home/results/* && \
   # asciidoc
-    pip3 install termcolor gramfuzz &&
+    pip3 install termcolor gramfuzz && \
     groupadd --gid 5000 newuser && \
     useradd --home-dir /home/newuser --create-home --uid 5000 \
     --gid 5000 --shell /bin/sh --skel /dev/null newuser && \
