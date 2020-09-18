@@ -738,12 +738,17 @@ NDef(
 )
 NDef("here_end", And("EOF\n", NRef("possible_commands"), "\nEOF\n"))
 # deleting since recursion doesn't work
-NDef("nl", NRef("newline_list"))
-NDef(
-    "newline_list",
-    WeightedOr((And(NRef("nl"), NRef("NEWLINE")), 0.05), (NRef("NEWLINE"), 0.95)),
-)
-NDef("linebreak", Or(NRef("newline_list"), ""))
+# NDef("nl", NRef("newline_list"))
+NDef("newline_list", #WeightedOr(
+                    #(And(
+                    #    NRef("nl"),
+                    #    NRef("NEWLINE")
+                    #    ), 0.05),
+                    NRef("NEWLINE") #, 0.95)
+                    )
+NDef("linebreak",  Or(
+            NRef("newline_list"),
+             ""))
 # is this what empty means?
 NDef("separator_op", Or(" &", ";"))
 NDef(

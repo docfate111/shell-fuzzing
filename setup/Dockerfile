@@ -38,7 +38,7 @@ RUN apt-get update -y && \
     cp /etc/apt/sources.list /etc/apt/sources.list~ && \
     sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list && \
     apt update
-RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata asciidoc
+#RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata asciidoc
 WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
@@ -112,7 +112,3 @@ RUN mkdir -p /home/tests/zshtests && cp -r zsh/Test/* /home/tests/zshtests && \
 #      status, and any changes to the filesystem.
 #   c. Outputs a summary comparing the behavior of each shell, grouping
 #      them into equivalence classes.
-# RUN node /home/tests/smoosh-fuzz/src/runTests/runTests.js > results
-# does a and b and saves the summary to results
-# with scripts in home/tests/testscripts/script
-# node runsArgOnShells.js runs whatever argument is passed to it
