@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 RUN apt-get update -y && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND="noninteractive" apt-get install -y git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf software-properties-common tmux nano bison flex && \
+    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf software-properties-common bison flex && \
     #ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
     #dpkg-reconfigure --frontend noninteractive tzdata && \
     #1. Write a docker that sets up
@@ -38,7 +38,7 @@ RUN apt-get update -y && \
     cp /etc/apt/sources.list /etc/apt/sources.list~ && \
     sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list && \
     apt update
-#RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata asciidoc
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata asciidoc
 WORKDIR /home
 RUN git clone https://github.com/mgree/smoosh-fuzz.git && \
     cd smoosh-fuzz/src/scriptGeneration && \
