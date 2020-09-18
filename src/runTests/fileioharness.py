@@ -33,8 +33,20 @@ def run(cmd):
     return proc.returncode, stdout, stderr
 
 
-def runOnShells(shell_list, filename):
-    for shell in shell_list:
+def runOnShells(shell_list, filename, exitOndiff):
+    results = {}
+    shell = shell_list[0]
+    print(colored(shell, "yellow"))
+    print(colored("=" * 10, "yellow"))
+    output_info = run(["/bin/" + shell, filename])
+    print("Exit code:", output_info[0])
+    print("Stdout:", output_info[1].decode("utf-8"))
+    print("Stderr:", output_info[2].decode("utf-8"))
+    print(colored("=" * 10, "yellow"))
+    results["Exit code"] = output_info[0]
+    results["Stdout"] = output_info[1].decode("utf-8")
+    results["Stderr"] = output_info[2].decode("utf-8")
+    for shell in shell_list[1:]:
         print(colored(shell, "yellow"))
         print(colored("=" * 10, "yellow"))
         output_info = run(["/bin/" + shell, filename])
@@ -42,11 +54,20 @@ def runOnShells(shell_list, filename):
         print("Stdout:", output_info[1].decode("utf-8"))
         print("Stderr:", output_info[2].decode("utf-8"))
         print(colored("=" * 10, "yellow"))
+        if exitOndiff:
+            if (
+                output_info[0] != results["Exit code"]
+                or output_info[1] != results["Stdout"]
+                or output_info[2] != results["Stderr"]
+            ):
+                exit(1)
 
 
 if __name__ == "__main__":
+    # https://github.com/mykter/afl-training/tree/master/harness#writing-a-file-input-test-harness
     if len(sys.argv) == 1:
-        print("Usage: python3", sys.argv[0], "[script]")
+        print("Usage: python3", sys.argv[0], "[script] [exit on difference]")
+        print("Takes a file and runs all installed shells on it")
         exit(0)
     shells = [
         "dash",
@@ -65,4 +86,7 @@ if __name__ == "__main__":
         "tcsh",
     ]
     installedShells = list(filter(checkShell, shells))
-    runOnShells(installedShells, os.getcwd() + "/" + sys.argv[1])
+    exitOndiff = False
+    if len(sys.argv) > 2:
+        exitOndiff = True
+    runOnShells(installedShells, os.getcwd() + "/" + sys.argv[1], exitOndiff)
