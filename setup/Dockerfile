@@ -104,7 +104,15 @@ RUN mkdir -p /home/tests/zshtests && cp -r zsh/Test/* /home/tests/zshtests && \
     mkdir -p /home/tests/fishtests && cp -r fish/tests/* /home/tests/fishtests && \ 
     mkdir -p /home/tests/bash4tests && cp -r bash-4.0/tests/* /home/tests/bash4tests && \ 
     mkdir -p /home/tests/bash3tests && cp -r bash-3.2.57/tests/* /home/tests/bash3tests && \
-    touch ~/.zshrc
+    touch ~/.zshrc && mkdir -p /home/tests/results && \
+    mkdir -p /home/tests/alltests && cp -r yash/tests/* /home/tests/alltests && \ 
+    cp -r zsh/Test/* /home/tests/alltests && \
+    cp -r yash/tests/* /home/tests/alltests && \
+    cp -r tcsh/tests/* /home/tests/alltests && \
+    cp -r mksh/test.sh /home/tests/alltests && \
+    cp -r fish/tests/* /home/tests/alltests && \
+    cp -r bash-4.0/tests/* /home/tests/alltests && \
+    cp -r bash-3.2.57/tests/* /home/tests/alltests
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
