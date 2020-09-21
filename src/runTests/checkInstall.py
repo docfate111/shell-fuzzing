@@ -18,9 +18,10 @@ def which(program):
     return "Not installed"
 
 
-def checkShell(program):
+def checkShell(program, installed_shells):
     if "/bin" in which(program):
         print(colored(program + " is installed", "green"))
+        installed_shells.append(program)
     else:
         print(colored(program + " is not installed", "red"))
 
@@ -42,5 +43,12 @@ if __name__ == "__main__":
         "bash",
         "tcsh",
     ]
+    installed = []
     for i in shells:
-        checkShell(i)
+        checkShell(i, installed)
+    # save a list of shells that are installed on the system as 
+    # a text file
+    f = open("installed_shells", "w")
+    for i in installed:
+        f.write(i + "\n")
+    f.close()

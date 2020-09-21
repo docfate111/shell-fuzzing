@@ -48,7 +48,7 @@ def runOnShells(shell_list, filename):
     shell = shell_list[0]
     print(colored(shell, "yellow"))
     print(colored("=" * 10, "yellow"))
-    output_info = run(["/bin/" + shell, filename])
+    output_info = run(["/usr/local/bin/" + shell, filename])
     print("Exit code:", output_info[0])
     print("Stdout:", output_info[1].decode("utf-8"))
     print("Stderr:", output_info[2].decode("utf-8"))
@@ -59,7 +59,7 @@ def runOnShells(shell_list, filename):
     for shell in shell_list[1:]:
         print(colored(shell, "yellow"))
         print(colored("=" * 10, "yellow"))
-        output_info = run(["/bin/" + shell, filename])
+        output_info = run(["/usr/local/bin/" + shell, filename])
         print("Exit code:", output_info[0])
         print("Stdout:", output_info[1].decode("utf-8"))
         print("Stderr:", output_info[2].decode("utf-8"))
