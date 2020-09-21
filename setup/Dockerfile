@@ -112,7 +112,8 @@ RUN mkdir -p /home/tests/zshtests && cp -r zsh/Test/* /home/tests/zshtests && \
     cp -r mksh/test.sh /home/tests/alltests && \
     cp -r fish/tests/* /home/tests/alltests && \
     cp -r bash-4.0/tests/* /home/tests/alltests && \
-    cp -r bash-3.2.57/tests/* /home/tests/alltests
+    cp -r bash-3.2.57/tests/* /home/tests/alltests && \
+    python3 /home/smoosh-fuzz/src/runTests/checkInstall.py
   #cp /home/tests/testscripts/* /home/tests/smoosh-fuzz/tests
 # 2. Write a script in the language of your choosing that:
 #   a. Reads in a sample script.
