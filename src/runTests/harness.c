@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
                         puts("Different!");
                         // printf("%s %s\n", path[a], path[b]);
                         // printf("%d %d", exit_codes[a], exit_codes[b]);
-                        return -1;
+                        abort();
                     }
                 }
             }
