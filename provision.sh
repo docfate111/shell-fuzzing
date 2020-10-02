@@ -53,11 +53,6 @@ cd ~/shells
 wget https://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
 mkdir -p bash5/src && tar xf bash-5.0.tar.gz -C bash5/src --strip-components 1
 cd ~/shells
-#     mkdir build; cd build && CC=$(which afl-gcc) CCX=$(which afl-g++) cmake .. && CC=$(which afl-gcc) CCX=$(which afl-g++) make
-#     CC=$(which afl-gcc) CCX=$(which afl-g++) make install &&  cd /home/smoosh-fuzz/shells
-#     #bash version 5 errors getting bash 5
-#     #git clone https://salsa.debian.org/debian/bash.git && CC=$(which afl-gcc) CCX=$(which afl-g++) make
-#     #cp bash bash5 && cp bash5 /usr/local/bin/bash5
 # WORKDIR /home/smoosh-fuzz/shells
 # #      - bash (3.x (MAC) and  4.x)
 # RUN tar -xf bash-4.0.tar.gz
