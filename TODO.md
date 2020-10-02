@@ -14,6 +14,7 @@
 ?? Next steps:
 - [X] [Use shellcheck](https://github.com/koalaman/shellcheck) to fix errors
 - [ ] Option to not generate calls to real programs (need to watch out for `eval` and `source`/`.`!)
+- [ ] Check hashes of files we download?
 - [ ] Options to avoid weird behaviors
   + [ ] Implementation defined (e.g., checking pipe termination)
   + [ ] [Unspecified behavior](https://github.com/mgree/smoosh/blob/master/unspec.md) (e.g., unset `HOME` for `~`) (see 
