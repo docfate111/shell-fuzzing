@@ -1,16 +1,13 @@
 #!/bin/bash
 yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf
+    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
     software-properties-common bison flex
 pip3 install termcolor gramfuzz
 git clone https://github.com/google/AFL.git
 cd AFL
 make
 make install
-make clean all 
-#I don't think I need this, maybe later I will change $CC in all the below commands if that is correct
-# CC=/usr/local/bin/afl-g++
-#CCX=/usr/local/bin/afl-gcc 
+make clean all
 # idk if these packages are needed: yum -y install tzdata asciidoc
 # download AFL (TODO: put AFL-fuzz binaries in PATH?)
 cd ~
@@ -53,42 +50,22 @@ cd ~/shells
 wget https://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
 mkdir -p bash5/src && tar xf bash-5.0.tar.gz -C bash5/src --strip-components 1
 cd ~/shells
-# WORKDIR /home/smoosh-fuzz/shells
-# #      - bash (3.x (MAC) and  4.x)
-# RUN tar -xf bash-4.0.tar.gz
-#     tar xf bash-3.2.57.tar.gz
-#     cd bash-4.0 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  &&  CC=$(which afl-gcc) CCX=$(which afl-g++) make
-#     CC=$(which afl-gcc) CCX=$(which afl-g++) make install && cp bash /usr/local/bin/bash4 && cd /home/smoosh-fuzz/shells
-#     cd bash-3.2.57 && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make
-#     CC=$(which afl-gcc) CCX=$(which afl-g++) make install && cp bash /usr/local/bin/bash3
-# WORKDIR /home/smoosh-fuzz/shells
-# #      - heirloom SH
-# RUN git clone https://github.com/grml/heirloom-sh
-#     cd heirloom-sh/
-#       CC=$(which afl-gcc) CCX=$(which afl-g++) make && mv sh /usr/local/bin/heirloom-sh &&  cd /home/smoosh-fuzz/shells
-#     tar -x --xz < oil-0.8.pre4.tar.xz
-#     cd oil-0.8.pre4
-#     CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure  && CC=$(which afl-gcc) CCX=$(which afl-g++) make && ./install \
-#     && cd /home/smoosh-fuzz/shells/ && rm *gz *xz
-# WORKDIR /home/smoosh-fuzz/shells
-# # for some reason this gives an error:
-# # maybe later posh shell could be tested
-# # RUN apt source posh && cd posh && CC=$(which afl-gcc) CCX=$(which afl-g++) ./configure && make && make install
-# WORKDIR /home/smoosh-fuzz/shells
-# RUN mkdir -p /home/tests/zshtests && cp -r zsh/Test/* /home/tests/zshtests
-#     mkdir -p /home/tests/yashtests &&  cp -r yash/tests/* /home/tests/yashtests 
-#     mkdir -p /home/tests/tcshtests &&  cp -r tcsh/tests/* /home/tests/tcshtests 
-#     mkdir -p /home/tests/mkshtests && cp -r mksh/test.sh /home/tests/mkshtests
-#     mkdir -p /home/tests/fishtests && cp -r fish/tests/* /home/tests/fishtests 
-#     mkdir -p /home/tests/bash4tests && cp -r bash-4.0/tests/* /home/tests/bash4tests 
-#     mkdir -p /home/tests/bash3tests && cp -r bash-3.2.57/tests/* /home/tests/bash3tests
-#     touch ~/.zshrc && mkdir -p /home/tests/results
-#     mkdir -p /home/tests/alltests && cp -r yash/tests/* /home/tests/alltests 
-#     cp -r zsh/Test/* /home/tests/alltests
-#     cp -r yash/tests/* /home/tests/alltests
-#     cp -r tcsh/tests/* /home/tests/alltests
-#     cp -r mksh/test.sh /home/tests/alltests
-#     cp -r fish/tests/* /home/tests/alltests
-#     cp -r bash-4.0/tests/* /home/tests/alltests
-#     cp -r bash-3.2.57/tests/* /home/tests/alltests
-#     python3 /home/smoosh-fuzz/src/runTests/checkInstall.py
+# make directory for bash3
+mkdir -p bash3/src && tar xf bash-3.2.57.tar.gz -C bash3/src --strip-components 1
+cd ~/shells
+# make directory for bash4
+mkdir -p bash4/src && tar xf bash-4.0.tar.gz -C bash4/src --strip-components 1
+cd ~/shells
+# make directory for heirloom-sh
+git clone https://github.com/grml/heirloom-sh
+cd heirloom-sh
+mkdir src && mv * src
+cd ~/shells
+# make directory for oil shell
+wget https://www.oilshell.org/download/oil-0.8.0.tar.gz
+mkdir -p osh/src && tar xf oil-0.8.0.tar.gz -C osh/src --strip-components 1
+rm *gz *xz
+cd ~/shells
+# make directory for posh
+wget https://salsa.debian.org/clint/posh/-/archive/debian/0.14.1/posh-debian-0.14.1.tar.bz2
+mkdir -p posh/src && tar xf posh-debian-0.14.1.tar.bz2 -C posh/src --strip-components 1
