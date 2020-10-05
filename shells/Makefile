@@ -1,40 +1,46 @@
-CC = which afl-gcc
-make:
-	make tcsh && make tcsh && make zsh && make yash && make ksh && make mksh && make bash5 && make bash4 && make bash3 
+CC=afl-gcc
 
-make tcsh:
-	cd tcsh/src && $(CC) ./configure --without-tcsetpgrp  && make && mv tcsh ..
+.PHONY: all clean
 
-make zsh:
-	cd zsh/src && $(CC) ./configure --without-tcsetpgrp  && make && mv zsh ..
+all: tcsh zsh yash ksh mksh bash5 bash4 bash3 heirloom-sh osh posh
 
-make yash:
-	cd yash/src && $(CC) ./configure --enable-array --enable-dirstack --enable-help --enable-history --enable-lineedit
-	\ --enable-nls --enable-printf --enable-socket --enable-test --enable-ulimit && make && mv yash ..
+# MMG 2020-10-05 why --without-tcset-pgrp?
+tcsh:
+	cd tcsh/src && ./configure --without-tcsetpgrp && $(MAKE) && mv tcsh ..
 
-make ksh:
-	cd ksh/src && $(CC) ninja -C build install && mv ksh ..
+zsh:
+	cd zsh/src && ./configure --without-tcsetpgrp && $(MAKE) && mv zsh ..
 
-make mksh:
-	cd mksh/src && $(CC) /bin/sh ./Build.sh && mv mksh ..
+yash:
+	cd yash/src && ./configure --enable-array --enable-dirstack --enable-help --enable-history --enable-lineedit
+	\ --enable-nls --enable-printf --enable-socket --enable-test --enable-ulimit && $(MAKE) && mv yash ..
 
-make bash5:
-	cd bash5/src && $(CC) ./configure && $(CC) make && cp bash ../bash5
+ksh:
+	cd ksh/src && ninja -C build install && mv ksh ..
 
-make bash4:
-	cd bash4/src && $(CC) ./configure && $(CC) make && cp bash ../bash4
+mksh:
+	cd mksh/src && /bin/sh ./Build.sh && mv mksh ..
 
-make bash3:
-	cd bash3/src && $(CC) ./configure && $(CC) make && cp bash ../bash3
+bash5:
+	cd bash5/src && ./configure && $(MAKE) && cp bash ../bash5
 
-make heirloom-sh:
-	cd heirloom-sh/src &&  $(CC) make && cp sh ../heirloom-sh
+bash4:
+	cd bash4/src && ./configure && $(MAKE) && cp bash ../bash4
 
-make osh:
-	cd osh/src && $(CC) ./configure  && $(CC) make && mv osh ..
+bash3:
+	cd bash3/src && ./configure && $(MAKE) && cp bash ../bash3
 
-make posh:
-	cd posh/src && $(CC) autoreconf -fiv &&  $(CC) --disable-dependency-tracking --disable-silent-rules && $(CC) make && mv posh .. 
+heirloom-sh:
+	cd heirloom-sh/src && $(MAKE) && cp sh ../heirloom-sh
+
+osh:
+	cd osh/src && ./configure && $(MAKE) && mv osh ..
+
+posh:
+	cd posh/src && autoreconf -fiv && ./configure --disable-dependency-tracking --disable-silent-rules && $(MAKE) && mv posh .. 
+	
+clean:
+	-rm -f tcsh zsh yash ksh mksh bash5 bash4 bash3 heirloom-sh osh posh
 
 
 
