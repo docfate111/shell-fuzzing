@@ -1,5 +1,5 @@
 #!/bin/bash
-yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
+sudo yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
     python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
     software-properties-common bison flex
 pip3 install termcolor gramfuzz

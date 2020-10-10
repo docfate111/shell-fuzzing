@@ -38,6 +38,8 @@ osh:
 
 posh:
 	cd posh/src && autoreconf -fiv && ./configure --disable-dependency-tracking --disable-silent-rules && $(MAKE) && mv posh .. 
+
+smoosh: 
 	
 clean:
 	-rm -f tcsh zsh yash ksh mksh bash5 bash4 bash3 heirloom-sh osh posh
