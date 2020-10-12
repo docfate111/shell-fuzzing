@@ -70,3 +70,26 @@ cd ~/smoosh-fuzz/shells
 # make directory for posh
 wget https://salsa.debian.org/clint/posh/-/archive/debian/0.14.1/posh-debian-0.14.1.tar.bz2
 mkdir -p posh/src && tar xf posh-debian-0.14.1.tar.bz2 -C posh/src --strip-components 1
+cd ~/smoosh-fuzz/shells
+rm *bz2
+mkdir -p bin
+# installing smoosh
+git clone --recurse-submodules https://github.com/mgree/smoosh.git
+cd smoosh
+# # install opam:
+# wget https://github.com/ocaml/opam/releases/download/2.0.3/opam-2.0.3-x86_64-linux
+# sudo cp opam-2.0.3-x86_64-linux /usr/bin/opam
+# sudo chmod +x /usr/bin/opam
+#  # get dependency:
+# sudo yum install bubblewrap gmp gmp-devel
+# opam init
+#  opam install -y ocamlfind ocamlbuild num zarith extunix lem
+# (afl-gcc?) make -C src all all.byte
+# : Package `libdash' not found???
+# # installing ninja build system for ksh
+# cd ~
+# git clone git://github.com/ninja-build/ninja.git && cd ninja
+# ./configure.py --bootstrap
+# sudo cp ninja /usr/bin/ninja
+# # installing meson for ksh:
+# sudo pip3 install meson

@@ -28,7 +28,7 @@ bin/posh:
 
 # can't install ninja
 bin/ksh:
-	cd ksh/src && CC="afl-gcc" ninja -C build install && mv ksh ../../$@
+	cd ksh/src && CC="afl-gcc" meson build && CC="afl-gcc" ninja install && mv ksh ../../$@
 
 # can't find the zsh binary
 bin/zsh:
