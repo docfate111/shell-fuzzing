@@ -1,15 +1,4 @@
 #!/bin/bash
-<<<<<<< HEAD
-#yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-#    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
-#    software-properties-common bison flex
-#pip3 install termcolor gramfuzz
-#git clone https://github.com/google/AFL.git
-#cd AFL
-#make
-#make install
-#make clean all
-=======
 sudo yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
     python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
     software-properties-common bison flex
@@ -19,55 +8,9 @@ cd AFL
 make
 make install
 make clean all
->>>>>>> 8c8cb94671407b114a82c0f52202ea143057c29d
 # idk if these packages are needed: yum -y install tzdata asciidoc
 # download AFL (TODO: put AFL-fuzz binaries in PATH?)
 #cd ~
-#git clone https://github.com/mgree/smoosh-fuzz.git
-#cd smoosh-fuzz/src/scriptGeneration
-#./generateScripts.sh 100 
-# download shells
-#mkdir ~/smoosh-fuzz/shells
-cd ~/smoosh-fuzz/shells
-#  install dash
-wget https://dl.bintray.com/homebrew/mirror/dash-0.5.11.2.tar.gz
-mkdir dash && tar xf dash-0.5.11.2.tar.gz -C dash --strip-components 1
-cd ~/smoosh-fuzz/shells
-# download tcsh
-wget https://ftp.osuosl.org/pub/blfs/conglomeration/tcsh/tcsh-6.22.02.tar.gz
-mkdir -p tcsh/src && tar xf tcsh-6.22.02.tar.gz -C tcsh/src --strip-components 1
-cd ~/smoosh-fuzz/shells
-# download zsh
-wget https://www.zsh.org/pub/zsh-5.8.tar.xz
-mkdir -p zsh/src && tar xf zsh-5.8.tar.xz -C zsh/src --strip-components 1
-cd ~/smoosh-fuzz/shells
-# download yash
-#!/bin/bash
-<<<<<<< HEAD
-#yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-#    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
-#    software-properties-common bison flex
-#pip3 install termcolor gramfuzz
-#git clone https://github.com/google/AFL.git
-#cd AFL
-#make
-#make install
-#make clean all
-=======
-sudo yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
-    software-properties-common bison flex
-pip3 install termcolor gramfuzz
-git clone https://github.com/google/AFL.git
-cd AFL
-make
-make install
-make clean all
->>>>>>> 8c8cb94671407b114a82c0f52202ea143057c29d
-# idk if these packages are needed: yum -y install tzdata asciidoc
-# download AFL (TODO: put AFL-fuzz binaries in PATH?)
-#cd ~
-#git clone https://github.com/mgree/smoosh-fuzz.git
 #cd smoosh-fuzz/src/scriptGeneration
 #./generateScripts.sh 100 
 # download shells
