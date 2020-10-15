@@ -24,23 +24,23 @@ bin/heirloom-sh:
 	cd heirloom-sh/src && CC=afl-gcc $(MAKE) && mv sh ../../$@
 
 bin/posh:
-	cd posh/src && autoreconf -fiv && CC="afl-gcc" ./configure --disable-dependency-tracking --disable-silent-rules && CC=afl-gcc $(MAKE) && mv posh $@ 
+	cd posh/src && autoreconf -fiv && CC="afl-gcc" ./configure --disable-dependency-tracking --disable-silent-rules && CC=afl-gcc $(MAKE) && cp posh ../../bin/posh
+
+
+bin/zsh:
+	cd zsh/src && CC="afl-gcc" ./configure  && CC=afl-gcc $(MAKE) && mv Src/zsh ../../$@
+
+# osh needs to either be a symbolic link or called as '_bin/oil.ovm osh' is this ok?
+bin/osh:
+	cd osh/src && CC="afl-gcc" ./configure --prefix ~ --datarootdir ~/.local/share && CC=afl-gcc $(MAKE) && cp _bin/oil.ovm ../../bin
+
+# wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R56.tgz
+bin/mksh:
+	cd mksh/src && CC="afl-gcc" /bin/sh ./Build.sh -r && mv mksh ../../$@
 
 # can't install ninja
 bin/ksh:
 	cd ksh/src && CC="afl-gcc" meson build && CC="afl-gcc" ninja install && mv ksh ../../$@
-
-# can't find the zsh binary
-bin/zsh:
-	cd zsh/src && CC="afl-gcc" ./configure  && CC=afl-gcc $(MAKE) && mv zsh ../../$@
-
-# can't find the osh binary
-bin/osh:
-	cd osh/src && CC="afl-gcc" ./configure && CC=afl-gcc $(MAKE) && mv osh ../../$@
-
-# wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R59b.tgz and other links gave 404?
-bin/mksh:
-	cd mksh/src && CC="afl-gcc" /bin/sh ./Build.sh -r && mv mksh ../../$@
 
 clean:
 	-rm -f bin/*

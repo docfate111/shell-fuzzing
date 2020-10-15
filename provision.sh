@@ -37,8 +37,8 @@ wget https://github.com/att/ast/releases/download/2020.0.0/ksh-2020.0.0.tar.gz
 mkdir -p ksh/src &&  tar xf ksh-2020.0.0.tar.gz -C ksh/src --strip-components 1
 cd ~/smoosh-fuzz/shells
 # download mksh
-wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R59b.tgz 
-mkdir -p mksh/src && tar xf mksh-R59b.tgz -C mksh/src --strip-components 1
+wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R56.tgz 
+mkdir -p mksh/src && tar xf mksh-R56.tgz -C mksh/src --strip-components 1
 cd ~/smoosh-fuzz/shells
 # download fish: error about fish being slow from afl-fuzz
 wget https://github.com/fish-shell/fish-shell/releases/download/3.1.2/fish-3.1.2.tar.gz
