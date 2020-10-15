@@ -1,0 +1,13 @@
+dist: xenial
+
+language: generic
+
+os:
+  - linux
+
+before_install:
+  - sh provision.sh
+
+install:
+  - cd shells; make
+  
