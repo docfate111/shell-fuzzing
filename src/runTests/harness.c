@@ -48,9 +48,11 @@ int main(int argc, char** argv) {
     }
     for(int i=0; i<len; i++){
         char* cmd = (char*)calloc(15+strlen(argv[1]), sizeof(char));
+        strncat(cmd, "~/smoosh-fuzz/shells/bin/",25);
         strncat(cmd, list_of_shells[i], 15);
         strncat(cmd, " ", 1);
-        strncat(cmd, argv[1], 40);
+        strncat(cmd, argv[1], 65);
+        puts(cmd);
         exit_codes[i] = run_command(cmd, path[i]);
         // exit if exit codes are different
         // is there a more efficient way to do this with less loops?
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
                         puts("Different!");
                         // printf("%s %s\n", path[a], path[b]);
                         // printf("%d %d", exit_codes[a], exit_codes[b]);
-                        abort();
+                        kill(getpid(),SIGINT);
                     }
                 }
             }
@@ -70,4 +72,3 @@ int main(int argc, char** argv) {
     }
     return 0;
 }
-   
