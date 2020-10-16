@@ -2,8 +2,7 @@ CC=$(shell which afl-gcc)
 
 .PHONY: all clean
 
-all: bin/yash bin/ksh bin/mksh bin/bash5 bin/bash4 bin/bash3 bin/heirloom-sh bin/osh bin/posh bin/tcsh bin/zsh
-
+all: bin/yash bin/tcsh bin/bash5 bin/bash4 bin/bash3 bin/heirloom-sh bin/posh bin/zsh bin/osh bin/mksh bin/ksh
 bin/yash:
 	cd yash/src && CC="afl-gcc" ./configure --enable-array --enable-dirstack --enable-help --enable-history --enable-lineedit --enable-nls --enable-printf --enable-socket --enable-test --enable-ulimit && CC=afl-gcc $(MAKE) && mv yash ../../$@
 
@@ -24,23 +23,22 @@ bin/heirloom-sh:
 	cd heirloom-sh/src && CC=afl-gcc $(MAKE) && mv sh ../../$@
 
 bin/posh:
-	cd posh/src && autoreconf -fiv && CC="afl-gcc" ./configure --disable-dependency-tracking --disable-silent-rules && CC=afl-gcc $(MAKE) && cp posh ../../bin/posh
-
-
-bin/zsh:
-	cd zsh/src && CC="afl-gcc" ./configure  && CC=afl-gcc $(MAKE) && mv Src/zsh ../../$@
-
-# osh needs to either be a symbolic link or called as '_bin/oil.ovm osh' is this ok?
-bin/osh:
-	cd osh/src && CC="afl-gcc" ./configure --prefix ~ --datarootdir ~/.local/share && CC=afl-gcc $(MAKE) && cp _bin/oil.ovm ../../bin
-
-# wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R56.tgz
-bin/mksh:
-	cd mksh/src && CC="afl-gcc" /bin/sh ./Build.sh -r && mv mksh ../../$@
+	cd posh/src && autoreconf -fiv && CC="afl-gcc" ./configure --disable-dependency-tracking --disable-silent-rules && CC=afl-gcc $(MAKE) && mv posh ../../$@
 
 # can't install ninja
 bin/ksh:
-	cd ksh/src && CC="afl-gcc" meson build && CC="afl-gcc" ninja install && mv ksh ../../$@
+	cd ksh/src && CC="afl-gcc" meson build && CC="afl-gcc" ninja -C build && mv build/src/cmd/ksh93/ksh ~/smoosh-fuzz/shells/$@
+
+# can't find the zsh binary
+bin/zsh:
+	cd zsh/src && CC="afl-gcc" ./configure  && CC=afl-gcc $(MAKE) && mv Src/zsh ../../$@
+# can't find the osh binary
+bin/osh:
+	cd osh/src && CC="afl-gcc" ./configure && CC=afl-gcc $(MAKE) && ln -s _bin/oil.ovm ../../$@
+
+# wget https://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R59b.tgz and other links gave 404?
+bin/mksh:
+	cd mksh/src && CC="afl-gcc" /bin/sh ./Build.sh -r && mv mksh ../../$@
 
 clean:
 	-rm -f bin/*
