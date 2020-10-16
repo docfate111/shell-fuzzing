@@ -51,9 +51,6 @@ cd ~/smoosh-fuzz/shells
 # make directory for bash3
 mkdir -p bash3/src && tar xf bash-3.2.57.tar.gz -C bash3/src --strip-components 1
 cd ~/smoosh-fuzz/shells
-# make directory for bash3
-mkdir -p bash3/src && tar xf bash-3.2.57.tar.gz -C bash3/src --strip-components 1
-cd ~/smoosh-fuzz/shells
 # make directory for bash4
 mkdir -p bash4/src && tar xf bash-4.0.tar.gz -C bash4/src --strip-components 1
 cd ~/smoosh-fuzz/shells
