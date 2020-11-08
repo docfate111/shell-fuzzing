@@ -1,13 +1,13 @@
 #!/bin/bash
-sudo yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
-    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
-    software-properties-common bison flex
-pip3 install termcolor gramfuzz
-git clone https://github.com/google/AFL.git
-cd AFL
-make
-make install
-make clean all
+# sudo yum -y install git xz-utils wget autotools-dev automake perl man groff-base cmake libncurses5-dev \
+#    python3 make python3-pip build-essential sudo libreadline-dev gettext ninja-build autoconf \
+#    software-properties-common bison flex
+# pip3 install termcolor gramfuzz
+# git clone https://github.com/google/AFL.git
+# cd AFL
+# make
+# make install
+# make clean all
 # idk if these packages are needed: yum -y install tzdata asciidoc
 # download AFL (TODO: put AFL-fuzz binaries in PATH?)
 #cd ~
