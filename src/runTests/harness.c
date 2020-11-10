@@ -6,10 +6,9 @@
 #define RSIZ 15
 #define SIZE 300
 int get_installed_shells(char line[15][15]){
-    FILE *fptr = NULL; 
     int i = 0;
-    fptr = fopen("installed_shells", "r");
-    if(fptr==NULL){
+    FILE *fptr = fopen("installed_shells", "r");
+    if(!fptr){
         puts("File doesn't exist");
         exit(0);
     }
@@ -19,56 +18,54 @@ int get_installed_shells(char line[15][15]){
     }
     return i;
 }
-int run_command(char* cmd, char path[1035]){
-    FILE *fp;
-    /* Open the command for reading. */
-    fp = popen(cmd, "r");
-    if (fp == NULL) {
-        printf("Failed to run command\n" );
-        exit(1);
+int run_shell(char shellname[], char* filename){
+    char* complete_path = (char*)malloc(36);
+    strncat(complete_path, "~/smoosh-fuzz/shells/bin/", 25);
+    strncat(complete_path, shellname, 11);
+    // Fork and fixup STDIN/STDOUT/STDERR.
+    int id = fork();
+    if(id==0){
+        // close stdin/stdout/stderr
+        close(stdin);
+        close(stderr);
+        close(stdout);
+        char* complete_path = (char*)malloc(36);
+        // open new file for stdin/stdout/stderr
+        char* stdinfilename = strdup(shellname);
+        strcat(stdinfilename, "stdin");
+        char* stdoutfilename = strdup(shellname);
+        strcat(stdoutfilename, "stdout");
+        char* stderrfilename = strdup(shellname);
+        strcat(stderrfilename, "stderr");
+        FILE* fstdin = fopen(stdinfilename, "w");
+        FILE* fstderr = fopen(stdoutfilename, "w");
+        FILE* fstdout = fopen(stderrfilename, "w");
+        char* argv[1];
+        argv[0] = filename;
+        execve(complete_path, argv, NULL);
     }
-    /* Get the result and store it in a string */
-    int fd = fileno(fp);
-    read(fd, path, 1035);
-     /* close */
-    int exit_code = pclose(fp);
-    return exit_code;
+    // Save STDOUT and STDERR to separate files.
+    // Call execve on the given shell with the provided file as an argument.
+    // Call wait to get the exit code. Record the exit code in a file.
+    // The outer loop that calls fork all of those times should call 
+    // wait an equal number of times (or until wait gives up). Then do the comparisons.
 }
 int main(int argc, char** argv) {
     if(argc != 2){
         printf("Usage [%s] [file to run]", argv[0]);
         return -1;
+    } 
+    int fd[2];
+    if(pipe(fd)==-1){
+        perror("Error creating pipe");
+        return -1;
     }
     char list_of_shells[RSIZ][LSIZ];
-    int len = get_installed_shells(list_of_shells);  
-    int exit_codes[len];
-    char path[1035][len];
-    for(int i=0; i<len; i++){
-        memset(path[i], 0, 1035);
-    }
-    for(int i=0; i<len; i++){
-        char* cmd = (char*)calloc(15+strlen(argv[1]), sizeof(char));
-        strncat(cmd, "~/smoosh-fuzz/shells/bin/",25);
-        strncat(cmd, list_of_shells[i], 15);
-        strncat(cmd, " ", 1);
-        strncat(cmd, argv[1], 65);
-        puts(cmd);
-        exit_codes[i] = run_command(cmd, path[i]);
-        // exit if exit codes are different
-        // is there a more efficient way to do this with less loops?
-        for(int a=0; a<=i; a++){
-            for(int b=0; b<=i; b++){
-               // printf("i=%d, a=%s, b=%s\n", i, path[a], path[b]);
-                if(a!=b){
-                    if(exit_codes[a]!=exit_codes[b] || strncmp(path[a], path[b], 1035)!=0){
-                        puts("Different!");
-                        // printf("%s %s\n", path[a], path[b]);
-                        // printf("%d %d", exit_codes[a], exit_codes[b]);
-                        kill(getpid(),SIGINT);
-                    }
-                }
-            }
-        }
+    int num_of_shells = get_installed_shells(list_of_shells);
+    for(size_t i=0; i<num_of_shells; i++){
+        char* file_to_run = (char*)malloc(12);
+        strncpy(file_to_run, argv[1], 11);
+        run_shell(list_of_shells[i], file_to_run);
     }
     return 0;
 }
