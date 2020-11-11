@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #define LSIZ 15
 #define RSIZ 15
 #define SIZE 300
@@ -22,7 +23,7 @@ int get_installed_shells(char line[15][15]){
 int run_shell(char shellname[], char* filename){
     char* complete_path = (char*)malloc(36);
     strncat(complete_path, "~/smoosh-fuzz/shells/bin/", 25);
-    strncat(complete_path, shellname, 11);
+    //strncat(complete_path, shellname, 11);
     puts(complete_path);
     // Fork and fixup STDIN/STDOUT/STDERR.
     int id = fork();
@@ -39,20 +40,27 @@ int run_shell(char shellname[], char* filename){
         char* stderrfilename = strdup(shellname);
         strcat(stderrfilename, "stderr");
         // renumber file descriptors
-        FILE* fstdin = fopen(stdinfilename, "w+");
-        FILE* fstderr = fopen(stderrfilename, "w+");
-        FILE* fstdout = fopen(stdoutfilename, "w+");
-        if(dup2(fileno(fstdin), STDIN_FILENO)==-1){
+        int fstdin = open(stdinfilename, O_RDONLY | O_CREAT | O_TRUNC);
+        int fstderr = open(stderrfilename,   O_WRONLY  | O_CREAT | O_TRUNC);
+        int fstdout = open(stdoutfilename,   O_WRONLY  | O_CREAT | O_TRUNC);
+        printf("%s %s %s\n", shellname, filename, complete_path);
+        printf("%d %d %d\n", fstdin, fstderr, fstdout);
+        close(0);
+        close(1);
+        close(2);
+        if(dup2(fstdin, 0)==-1){
             perror("Error");
         }
-        if(dup2(fileno(fstdout), STDOUT_FILENO)==-1){
+        if(dup2(fstdout, 1)==-1){
              perror("Error");
         }
-        if(dup2(fileno(fstderr), STDERR_FILENO)==-1){
+        if(dup2(fstderr, 2)==-1){
             perror("Error");
         }
-        char* argv[1];
-        argv[0] = filename;
+        char* argv[2];
+        puts(complete_path);
+        strcpy(argv[0], shellname);
+        strcpy(argv[1], filename);
         execve(complete_path, argv, 0);
     }
     // Call wait to get the exit code. Record the exit code in a file.
@@ -63,11 +71,6 @@ int run_shell(char shellname[], char* filename){
 int main(int argc, char** argv) {
     if(argc != 2){
         printf("Usage [%s] [file to run]", argv[0]);
-        return -1;
-    } 
-    int fd[2];
-    if(pipe(fd)==-1){
-        perror("Error creating pipe");
         return -1;
     }
     char list_of_shells[RSIZ][LSIZ];
