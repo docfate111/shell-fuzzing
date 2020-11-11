@@ -22,7 +22,7 @@ int get_installed_shells(char line[15][15]){
 }
 int run_shell(char shellname[], char* filename){
     char* complete_path = (char*)malloc(36);
-    strncat(complete_path, "~/smoosh-fuzz/shells/bin/", 25);
+    strncat(complete_path, "~/smoosh/src/", 25);
     //strncat(complete_path, shellname, 11);
     puts(complete_path);
     // Fork and fixup STDIN/STDOUT/STDERR.
@@ -40,9 +40,9 @@ int run_shell(char shellname[], char* filename){
         char* stderrfilename = strdup(shellname);
         strcat(stderrfilename, "stderr");
         // renumber file descriptors
-        int fstdin = open(stdinfilename, O_RDONLY | O_CREAT | O_TRUNC);
-        int fstderr = open(stderrfilename,   O_WRONLY  | O_CREAT | O_TRUNC);
-        int fstdout = open(stdoutfilename,   O_WRONLY  | O_CREAT | O_TRUNC);
+        int fstdin = open(stdinfilename, O_RDONLY | O_CREAT | O_TRUNC, 0644);
+        int fstderr = open(stderrfilename,   O_WRONLY  | O_CREAT | O_TRUNC, 0644);
+        int fstdout = open(stdoutfilename,   O_WRONLY  | O_CREAT | O_TRUNC, 0644);
         printf("%s %s %s\n", shellname, filename, complete_path);
         printf("%d %d %d\n", fstdin, fstderr, fstdout);
         close(0);
