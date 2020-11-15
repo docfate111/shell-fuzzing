@@ -20,13 +20,47 @@ int get_installed_shells(char line[15][15]){
     }
     return i;
 }
+int diff(char* shell1, char* shell2){
+    // exit code of 1 if different
+    char* complete_path = "/usr/bin/diff";
+    // set up files to check
+    char* stdinfilename = strdup(shell1);
+    strcat(stdinfilename, "stdin");
+    char* stdoutfilename = strdup(shell1);
+    strcat(stdoutfilename, "stdout");
+    char* stderrfilename = strdup(shell1);
+    strcat(stderrfilename, "stderr");
+    char* shell1files[] = {stdinfilename, stdoutfilename, stderrfilename};
+    char* stdinfilename2 = strdup(shell2);
+    strcat(stdinfilename2, "stdin");
+    char* stdoutfilename2 = strdup(shell2);
+    strcat(stdoutfilename2, "stdout");
+    char* stderrfilename2 = strdup(shell2);
+    strcat(stderrfilename2, "stderr");
+    char* shell2files[] = {stdinfilename2, stdoutfilename2, stderrfilename2};
+    int exitcode = 0;
+    int status;
+    for(size_t i=0; i<3; i++){
+        char* args[] = {complete_path, shell1files[i], shell2files[i], NULL};
+        if(fork()==0){
+            wait(&status);
+            if(!WIFEXITED(status)){
+                perror("Error getting the exit code");
+            }
+            if(execve(args[0], args, NULL)==-1){
+                perror("Error running execve");
+            }
+            exitcode |= WEXITSTATUS(status);
+        }
+    }
+    return exitcode;
+}
 int run_shell(char* shellname, char* filename){
     char* complete_path = (char*)malloc(52);
     strncat(complete_path, "/Users/thwilliams/smoosh-fuzz/shells/bin/", 41);
     strncat(complete_path, shellname, 11);
     char* args[3] = {complete_path, filename, NULL};
     int status;
-    //, exitcode;
     // Fork and fixup STDIN/STDOUT/STDERR.
     if(fork()==0){
         // close stdin/stdout/stderr
@@ -50,6 +84,7 @@ int run_shell(char* shellname, char* filename){
         if(dup2(fstderr, 2)==-1){
             perror("Error duplicating stderr");
         }
+        // Call wait to get the exit code. Record the exit code in a file.
         wait(&status);
         if(!WIFEXITED(status)){
             perror("Error getting the exit code");
@@ -59,9 +94,6 @@ int run_shell(char* shellname, char* filename){
         }
         return WEXITSTATUS(status);
     }
-    // Call wait to get the exit code. Record the exit code in a file.
-    // The outer loop that calls fork all of those times should call 
-    // wait an equal number of times (or until wait gives up). Then do the comparisons.
     return 0;
 }
 int main(int argc, char** argv) {
@@ -71,11 +103,30 @@ int main(int argc, char** argv) {
     }
     char list_of_shells[RSIZ][LSIZ];
     int num_of_shells = get_installed_shells(list_of_shells);
-    int exitcodes[LSIZ];
+    int exitcodes[num_of_shells];
     for(int i=0; i<num_of_shells; i++){
         char* file_to_run = (char*)malloc(12);
         strncpy(file_to_run, argv[1], 11);
         exitcodes[i] = run_shell(list_of_shells[i], file_to_run);
+    }
+    // compare exit codes
+    for(int i=0; i<num_of_shells; i++){
+        for(int j=0; j<num_of_shells; j++){
+            if(exitcodes[i]!=exitcodes[j]){
+                printf("Different exit codes: %d!=%d", exitcodes[i], exitcodes[j]);
+                return 1;
+            }
+        }
+    }
+    // compare files
+    for(int i=0; i<num_of_shells; i++){
+        for(int j=0; j<num_of_shells; j++){
+            if(i!=j){
+                if(diff(list_of_shells[i], list_of_shells[j])){
+                    printf("Different stdout, stderr, or stdin!");
+                }
+            }
+        }
     }
     return 0;
 }
