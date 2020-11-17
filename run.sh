@@ -9,5 +9,6 @@ cd ~/smoosh-fuzz/src/scriptGeneration
 cd ~/smoosh-fuzz/src/runTests
 # get list of shells installed in smoosh-fuzz/shells/bin
 ./checkInstall.sh
+make harness
 # start fuzzing with the harness
 ./runHarness.sh
