@@ -43,15 +43,16 @@ int diff(char* shell1, char* shell2){
     for(size_t i=0; i<3; i++){
         char* args[] = {complete_path, shell1files[i], shell2files[i], NULL};
         if(fork()==0){
+            if(execve(args[0], args, NULL)==-1){
+                perror("Error running execve");
+            }
+            // printf("%s %s %s\n", args[0], args[1], args[2]);
+            exitcode |= WEXITSTATUS(status);
+        }else{
             wait(&status);
             if(!WIFEXITED(status)){
                 perror("Error getting the exit code");
             }
-            if(execve(args[0], args, NULL)==-1){
-                perror("Error running execve");
-            }
-            printf("%s %s %s\n", args[0], args[1], args[2]);
-            exitcode |= WEXITSTATUS(status);
         }
     }
     return exitcode;
@@ -87,16 +88,16 @@ int run_shell(char* shellname, char* filename, char* path_from_file){
             perror("Error duplicating stderr");
         }
         // Call wait to get the exit code. Record the exit code in a file.
-        wait(&status);
-        if(WIFEXITED(status)){
-            perror("Error getting the exit code");
-        }
         if(execve(args[0], args, NULL)==-1){
             perror("Error running execve");
         }
-        return WEXITSTATUS(status);
+    }else{
+        wait(&status);
+        if(!WIFEXITED(status)){
+            perror("Error getting the exit code");
+        }
     }
-    return 0;
+    return WEXITSTATUS(status);
 }
 int main(int argc, char** argv) {
     if(argc != 2){
