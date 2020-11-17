@@ -4,7 +4,15 @@ POSIX shell fuzzer
 
 A grammar-based fuzzer for the POSIX language implementation that runs random shell scripts and tests for undefined behavior.
 NOTE: the script assumes your OS is using the yum package manager but it shouldn't be hard to modify the script based for your distro
-Running ``` provision.sh && run.sh ``` should build everything
+Running 
+``` 
+./provision.sh
+``` 
+sets everything up
+```
+./run.sh
+```
+runs the harness
  .travis.yml (optional)
     just runs provision.sh and then make
   provision.sh
@@ -43,5 +51,3 @@ shells - file with a list of all of the shells we want to run:
   ~/shells/dash/bash
   ~/shells/smoosh/bash
   ...
-The harness uses this file to determine which shells to run
-
