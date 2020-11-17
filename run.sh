@@ -3,9 +3,9 @@ echo 'Make sure smoosh-fuzz is home directory'
 mkdir -p ~/smoosh-fuzz/seeds
 cd ~/smoosh-fuzz/shells
 make all
-cd ~/smoosh-fuzz
+cd ~/smoosh-fuzz/src/src/scriptGeneration
 # make scripts and put them in seeds
-src/scriptGeneration/generateScripts.sh 30
+./generateScripts.sh 30
 cd  src/runTests
 # get list of shells installed in smoosh-fuzz/shells/bin
 ./checkInstall.sh
