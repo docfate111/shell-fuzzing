@@ -11,7 +11,7 @@ int get_installed_shells(char line[15][15]){
     int i = 0;
     FILE *fptr = fopen("installed_shells", "r");
     if(!fptr){
-        perror("Please include a file named \"installed_shells\"");
+        perror("Please include a file named \"installed_shells\"\nRun ./checkInstall.sh");
         exit(0);
     }
     while(fgets(line[i], LSIZ, fptr)) {
@@ -50,16 +50,18 @@ int diff(char* shell1, char* shell2){
             if(execve(args[0], args, NULL)==-1){
                 perror("Error running execve");
             }
+            printf("%s %s %s\n", args[0], args[1], args[2]);
             exitcode |= WEXITSTATUS(status);
         }
     }
     return exitcode;
 }
-int run_shell(char* shellname, char* filename){
-    char* complete_path = (char*)malloc(52);
-    strncat(complete_path, "/Users/thwilliams/smoosh-fuzz/shells/bin/", 41);
+int run_shell(char* shellname, char* filename, char* path_from_file){
+    char* complete_path = (char*)malloc(100);
+    strcat(complete_path, path_from_file);
     strncat(complete_path, shellname, 11);
     char* args[3] = {complete_path, filename, NULL};
+    printf("%s %s\n", args[0], args[1]);
     int status;
     // Fork and fixup STDIN/STDOUT/STDERR.
     if(fork()==0){
@@ -86,7 +88,7 @@ int run_shell(char* shellname, char* filename){
         }
         // Call wait to get the exit code. Record the exit code in a file.
         wait(&status);
-        if(!WIFEXITED(status)){
+        if(WIFEXITED(status)){
             perror("Error getting the exit code");
         }
         if(execve(args[0], args, NULL)==-1){
@@ -104,10 +106,26 @@ int main(int argc, char** argv) {
     char list_of_shells[RSIZ][LSIZ];
     int num_of_shells = get_installed_shells(list_of_shells);
     int exitcodes[num_of_shells];
+    // get PATH for bin/ with shells
+    FILE *fp = fopen("complete_path", "r");
+    if(!fp){
+        perror("Please include a file named \"complete+path\"\nRun ./checkInstall.sh");
+        exit(0);
+    }
+    char path_from_file[100];
+    fgets(path_from_file, sizeof(path_from_file), fp);
+    fclose(fp);
+    int newlen = 0;
+    while(path_from_file[newlen]!='\n' && path_from_file[newlen]!='\0' && path_from_file[newlen]!='\t'){
+        newlen++;
+    }
+    char* path = (char*)malloc(newlen+2);
+    strncpy(path, path_from_file, newlen);
+    path[newlen] = '/';
     for(int i=0; i<num_of_shells; i++){
         char* file_to_run = (char*)malloc(12);
         strncpy(file_to_run, argv[1], 11);
-        exitcodes[i] = run_shell(list_of_shells[i], file_to_run);
+        exitcodes[i] = run_shell(list_of_shells[i], file_to_run, path);
     }
     // compare exit codes
     for(int i=0; i<num_of_shells; i++){
