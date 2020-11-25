@@ -32,6 +32,7 @@ void run(char *prog, char *file, char **stdout_file, char **stderr_file, char **
 	if (pid == 0) {
 		// child process
 		char *path;
+		// change to format string to "/smoosh/%S"
 		asprintf(&path, "./%s", prog);
 
 		// set stdout to output file
