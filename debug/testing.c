@@ -1,10 +1,27 @@
 // for asprintf
 #define _GNU_SOURCE
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/wait.h>
+#include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+// #define LSIZ 15
+// #define RSIZ 15
+// #define SIZE 300
+// int get_installed_shells(char line[15][15]){
+//     int i = 0;
+//     FILE *fptr = fopen("installed_shells", "r");
+//     if(!fptr){
+//         perror("Please include a file named \"installed_shells\"\nRun ./checkInstall.sh");
+//         exit(0);
+//     }
+//     while(fgets(line[i], LSIZ, fptr)) {
+//         line[i][strlen(line[i]) - 1] = '\0';
+//         i++;
+//     }
+//     return i;
+// }
 
 // returns name of file that was output
 void run(char *prog, char *file, char **stdout_file, char **stderr_file, char **stdin_file, int *status) {
@@ -38,12 +55,19 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Usage: %s [filename]\n", argv[0]);
 		exit(3);
 	}
-
+	// char list_of_shells[RSIZ][LSIZ];
+    // int num_of_shells = get_installed_shells(list_of_shells);
 	char *input_file = argv[1];
 	char *prog1_output[3];
 	char *prog2_output[3];
 	int prog1_status, prog2_status;
-
+	// loop through all installed shells and compare them
+	// for(int i=0; i<num_of_shells; i++){
+	// 	for(int j=0; j<num_of_shells; j++){
+	// 		run(list_of_shells[i], input_file, &prog1_output[0], &prog1_output[1], &prog1_output[2], &prog1_status);
+	// 		run(list_of_shells[j], input_file, &prog2_output[0], &prog2_output[1], &prog2_output[2], &prog2_status);
+	// 	}
+	// }
 	run("prog1", input_file, &prog1_output[0], &prog1_output[1], &prog1_output[2], &prog1_status);
 	run("prog2", input_file, &prog2_output[0], &prog2_output[1], &prog2_output[2], &prog2_status);
 
